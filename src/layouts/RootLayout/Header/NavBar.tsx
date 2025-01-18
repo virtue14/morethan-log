@@ -2,9 +2,13 @@ import styled from "@emotion/styled"
 import Link from "next/link"
 
 const NavBar: React.FC = () => {
-  const links = [{ id: 1, name: "About", to: "/about" }]
+  const links = [
+    { id: 1, name: "Resume", to: "/resume" }, // Resume 추가
+    // { id: 2, name: "About", to: "/about" } // 필요 시 추가
+  ]
+
   return (
-    <StyledWrapper className="">
+    <StyledWrapper>
       <ul>
         {links.map((link) => (
           <li key={link.id}>
@@ -19,14 +23,14 @@ const NavBar: React.FC = () => {
 export default NavBar
 
 const StyledWrapper = styled.div`
-  flex-shrink: 0;
-  ul {
-    display: flex;
-    flex-direction: row;
-    li {
-      display: block;
-      margin-left: 1rem;
-      color: ${({ theme }) => theme.colors.gray11};
+    flex-shrink: 0;
+    ul {
+        display: flex;
+        flex-direction: row;
+        li {
+            display: block;
+            margin-left: 1rem;
+            color: ${({ theme }) => theme.colors.gray11};
+        }
     }
-  }
 `
