@@ -5,8 +5,10 @@ module.exports = {
   async rewrites() {
     return [
       {
-        source: "/api/:path*", // /api/로 시작하는 모든 요청을
-        destination: "http://api.virtue-world.info/:path*", // EC2 API 서버로 프록시
+        source: "/api/:path*",
+        has: [{ type: "protocol", value: "https" }],
+        destination: "http://api.virtue-world.info:8081/:path*",
+        permanent: false,
       },
     ];
   },
