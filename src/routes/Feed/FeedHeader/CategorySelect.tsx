@@ -36,7 +36,9 @@ const CategorySelect: React.FC<Props> = () => {
               key={idx}
               onClick={() => handleOptionClick(key)}
             >
+              hjhj
               {`${key} (${data[key]})`}
+              hkhk
             </div>
           ))}
         </div>

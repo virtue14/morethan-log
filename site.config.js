@@ -18,9 +18,9 @@ const CONFIG = {
   ],
   // blog setting (required)
   blog: {
-    title: "virtue-log",
-    description: "welcome to virtue-log!",
-    scheme: "system", // 'light' | 'dark' | 'system'
+    title: "virtue-project.zip",
+    description: "나만의 프로젝트 모음집입니다.",
+    scheme: "dark", // 'light' | 'dark' | 'system'
   },
 
   // CONFIG configration (required)
