@@ -10,16 +10,16 @@ interface FilterPostsParams {
 }
 
 export function filterPosts({
-  posts,
-  q,
-  tag = undefined,
-  category = DEFAULT_CATEGORY,
-  order = "desc",
-}: FilterPostsParams): TPost[] {
+                              posts,
+                              q,
+                              tag = undefined,
+                              category = DEFAULT_CATEGORY,
+                              order = "desc",
+                            }: FilterPostsParams): TPost[] {
   return posts
     .filter((post) => {
       const tagContent = post.tags ? post.tags.join(" ") : ""
-      const searchContent = post.title + post.summary + tagContent
+      const searchContent = post.title + (post.summary || "") + tagContent
       return (
         searchContent.toLowerCase().includes(q.toLowerCase()) &&
         (!tag || (post.tags && post.tags.includes(tag))) &&
@@ -28,8 +28,15 @@ export function filterPosts({
       )
     })
     .sort((a, b) => {
-      const dateA = new Date(a.date.start_date).getTime()
-      const dateB = new Date(b.date.start_date).getTime()
+      const getValidDate = (dateStr?: string) => {
+        if (!dateStr || dateStr.trim() === "") return Number.MAX_SAFE_INTEGER
+        const timestamp = new Date(dateStr).getTime()
+        return isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp
+      }
+
+      const dateA = getValidDate(a.date?.end_date) || getValidDate(a.date?.start_date)
+      const dateB = getValidDate(b.date?.end_date) || getValidDate(b.date?.start_date)
+
       return order === "desc" ? dateB - dateA : dateA - dateB
     })
 }

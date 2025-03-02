@@ -17,7 +17,10 @@ export type TPostType = "Post" | "Paper" | "Page"
 
 export type TPost = {
   id: string
-  date: { start_date: string }
+  date?: {
+    start_date?: string;
+    end_date?: string;
+  };
   type: TPostType[]
   slug: string
   tags?: string[]
