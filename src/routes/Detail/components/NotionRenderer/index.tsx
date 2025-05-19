@@ -89,4 +89,23 @@ const StyledWrapper = styled.div`
   .notion-list {
     width: 100%;
   }
+  
+  /* Add styles for horizontal rule */
+  .css-776fao,
+  hr,
+  .notion-hr {
+    margin: 2em 0;
+    border: none;
+    border-top: 1.5px solid #9E9E9E;
+    width: 100%;
+  }
+
+  /* Dark mode support */
+  [data-scheme='dark'] & {
+    .css-776fao,
+    hr,
+    .notion-hr {
+      border-top-color: #787878;
+    }
+  }
 `
