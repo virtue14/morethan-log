@@ -20,7 +20,7 @@ const CONFIG = {
   blog: {
     title: "Project.zip",
     description: "나만의 프로젝트 모음집입니다.",
-    scheme: "system", // 'light' | 'dark' | 'system'
+    scheme: "light", // 'light' | 'dark' | 'system'
   },
 
   // CONFIG configration (required)
