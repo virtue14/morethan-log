@@ -1,8 +1,8 @@
 import { CONFIG } from "site.config"
 import React from "react"
-import { AiFillCodeSandboxCircle } from "react-icons/ai"
 import styled from "@emotion/styled"
 import { Emoji } from "src/components/Emoji"
+import Image from "next/image"
 
 const ServiceCard: React.FC = () => {
   if (!CONFIG.projects) return null
@@ -19,7 +19,9 @@ const ServiceCard: React.FC = () => {
             rel="noreferrer"
             target="_blank"
           >
-            <AiFillCodeSandboxCircle className="icon" />
+            <div className="icon-wrapper">
+              <Image src="/millo.png" alt="millo" width={24} height={24} />
+            </div>
             <div className="name">{project.name}</div>
           </a>
         ))}
@@ -56,10 +58,19 @@ const StyledWrapper = styled.div`
       color: ${({ theme }) => theme.colors.gray12};
       background-color: ${({ theme }) => theme.colors.gray5};
     }
-    .icon {
-      font-size: 1.5rem;
-      line-height: 2rem;
+    
+    .icon-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      
+      img {
+        object-fit: contain;
+      }
     }
+    
     .name {
       font-size: 0.875rem;
       line-height: 1.25rem;

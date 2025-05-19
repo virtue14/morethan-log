@@ -12,15 +12,15 @@ const CONFIG = {
   },
   projects: [
     {
-      name: ``,
-      href: "",
+      name: `올림 - 감정을 올리는 순간`,
+      href: "https://github.com/MIL-LO",
     },
   ],
   // blog setting (required)
   blog: {
-    title: "virtue-project.zip",
+    title: "Project.zip",
     description: "나만의 프로젝트 모음집입니다.",
-    scheme: "dark", // 'light' | 'dark' | 'system'
+    scheme: "system", // 'light' | 'dark' | 'system'
   },
 
   // CONFIG configration (required)
