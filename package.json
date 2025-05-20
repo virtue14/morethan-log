@@ -19,6 +19,7 @@
     "axios": ">=0.21.1",
     "cookies-next": "^2.1.2",
     "critters": "^0.0.25",
+    "lucide-react": "^0.511.0",
     "mermaid": "^10.9.1",
     "next": "^15.1.4",
     "notion-client": "^6.16.0",
