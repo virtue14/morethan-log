@@ -8,7 +8,7 @@ type Props = {
   onViewChange: (view: 'list' | 'grid') => void
 }
 
-export const FeedHeader: React.FC<Props> = ({ view, onViewChange }) => {
+export const FeedHeader = ({ view, onViewChange }: Props) => {
   const router = useRouter()
   const currentOrder = `${router.query.order || ``}` || "desc"
 
