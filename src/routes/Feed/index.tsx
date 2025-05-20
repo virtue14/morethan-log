@@ -11,6 +11,7 @@ import ServiceCard from "./ServiceCard"
 import ContactCard from "./ContactCard"
 import PostList from "./PostList"
 import PinnedPosts from "./PostList/PinnedPosts"
+import CategoryList from "./CategoryList"
 
 const HEADER_HEIGHT = 73
 
@@ -18,6 +19,7 @@ type Props = {}
 
 const Feed: React.FC<Props> = () => {
   const [q, setQ] = useState("")
+  const [view, setView] = useState<'list' | 'grid'>('grid')
 
   return (
     <StyledWrapper>
@@ -27,17 +29,18 @@ const Feed: React.FC<Props> = () => {
           height: `calc(100vh - ${HEADER_HEIGHT}px)`,
         }}
       >
-        <TagList />
+        <CategoryList />
       </div>
       <div className="mid">
         <MobileProfileCard />
-        <PinnedPosts q={q} />
+        <PinnedPosts q={q} view={view} />
         <SearchInput value={q} onChange={(e) => setQ(e.target.value)} />
         <div className="tags">
-          <TagList />
+          <CategoryList />
         </div>
-        <FeedHeader />
-        <PostList q={q} />
+        <FeedHeader view={view} onViewChange={setView} />
+        <hr className="divider" />
+        <PostList q={q} view={view} />
         <div className="footer">
           <Footer />
         </div>
@@ -104,6 +107,12 @@ const StyledWrapper = styled.div`
       @media (min-width: 1024px) {
         display: none;
       }
+    }
+
+    > .divider {
+      margin: 0 0.5rem 2rem;
+      border: none;
+      border-top: 1px solid ${({ theme }) => theme.colors.gray6};
     }
 
     > .footer {

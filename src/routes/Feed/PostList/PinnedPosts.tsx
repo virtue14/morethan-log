@@ -7,9 +7,10 @@ import { DEFAULT_CATEGORY } from "src/constants"
 
 type Props = {
   q: string
+  view: 'list' | 'grid'
 }
 
-const PinnedPosts: React.FC<Props> = ({ q }) => {
+const PinnedPosts: React.FC<Props> = ({ q, view }) => {
   const data = usePostsQuery()
 
   const filteredPosts = useMemo(() => {
@@ -25,13 +26,13 @@ const PinnedPosts: React.FC<Props> = ({ q }) => {
   if (filteredPosts.length === 0) return null
 
   return (
-    <StyledWrapper>
+    <StyledWrapper view={view}>
       <div className="wrapper">
         <div className="header">📌 Pinned Posts</div>
       </div>
-      <div className="my-2">
+      <div className="posts-container">
         {filteredPosts.map((post) => (
-          <PostCard key={post.slug} data={post} />
+          <PostCard key={post.slug} data={post} view={view} />
         ))}
       </div>
     </StyledWrapper>
@@ -40,8 +41,9 @@ const PinnedPosts: React.FC<Props> = ({ q }) => {
 
 export default PinnedPosts
 
-const StyledWrapper = styled.div`
+const StyledWrapper = styled.div<{ view: 'list' | 'grid' }>`
   position: relative;
+  
   .wrapper {
     display: flex;
     margin-bottom: 1rem;
@@ -49,6 +51,7 @@ const StyledWrapper = styled.div`
     align-items: center;
     border-bottom: 1px solid ${({ theme }) => theme.colors.gray6};
   }
+  
   .header {
     display: flex;
     margin-top: 0.5rem;
@@ -59,5 +62,16 @@ const StyledWrapper = styled.div`
     line-height: 1.75rem;
     font-weight: 700;
     cursor: pointer;
+  }
+
+  .posts-container {
+    display: ${({ view }) => view === 'grid' ? 'grid' : 'block'};
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
   }
 `
