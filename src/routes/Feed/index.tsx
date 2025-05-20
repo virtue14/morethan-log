@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 import SearchInput from "./SearchInput"
-import { FeedHeader } from "./FeedHeader"
+import FeedHeader from "./FeedHeader/index"
 import Footer from "./Footer"
 import styled from "@emotion/styled"
 import MobileProfileCard from "./MobileProfileCard"

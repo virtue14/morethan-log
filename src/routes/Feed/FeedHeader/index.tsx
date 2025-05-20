@@ -1,9 +1,12 @@
 /** @jsxImportSource @emotion/react */
-import React, { Dispatch, SetStateAction } from "react"
+import React from "react"
 import styled from "@emotion/styled"
 import { useRouter } from "next/router"
-import { Theme } from "@emotion/react"
-import { Colors } from "src/styles/colors"
+import { Colors } from "../../../styles/colors"
+import { DEFAULT_CATEGORY } from "../../../constants"
+import { useCategoriesQuery } from "../../../hooks/useCategoriesQuery"
+import useDropdown from "../../../hooks/useDropdown"
+import { MdExpandMore } from "react-icons/md"
 
 declare module "@emotion/react" {
   export interface Theme {
@@ -14,14 +17,17 @@ declare module "@emotion/react" {
 
 type ViewType = 'list' | 'grid'
 
-type FeedHeaderProps = {
+interface Props {
   view: ViewType
   onViewChange: (view: ViewType) => void
 }
 
-export const FeedHeader: React.ComponentType<FeedHeaderProps> = ({ view, onViewChange }) => {
+const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
   const router = useRouter()
   const currentOrder = `${router.query.order || ``}` || "desc"
+  const data = useCategoriesQuery()
+  const [dropdownRef, opened, handleOpen] = useDropdown()
+  const currentCategory = `${router.query.category || ``}` || DEFAULT_CATEGORY
 
   const handleOrderChange = (order: string) => {
     router.push({
@@ -32,13 +38,35 @@ export const FeedHeader: React.ComponentType<FeedHeaderProps> = ({ view, onViewC
     })
   }
 
+  const handleCategoryChange = (category: string) => {
+    router.push({
+      query: {
+        ...router.query,
+        category,
+      },
+    })
+  }
+
   return (
     <StyledWrapper>
       <div className="left">
-        <div className="category-title">
-          <div className="wrapper">
-            📂 All Posts <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" d="M0 0h24v24H0z"></path><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"></path></svg>
+        <div className="category-select">
+          <div ref={dropdownRef} className="wrapper" onClick={handleOpen}>
+            {currentCategory} Posts <MdExpandMore />
           </div>
+          {opened && (
+            <div className="content">
+              {Object.keys(data).map((key, idx) => (
+                <div
+                  className="item"
+                  key={idx}
+                  onClick={() => handleCategoryChange(key)}
+                >
+                  {`${key} (${data[key]})`}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <div className="right">
@@ -85,7 +113,9 @@ const StyledWrapper = styled.div`
   padding: 0.5rem;
 
   .left {
-    .category-title {
+    .category-select {
+      position: relative;
+      
       .wrapper {
         display: flex;
         align-items: center;
@@ -97,6 +127,30 @@ const StyledWrapper = styled.div`
 
         svg {
           margin-top: 1px;
+        }
+      }
+
+      .content {
+        position: absolute;
+        z-index: 40;
+        padding: 0.25rem;
+        border-radius: 0.75rem;
+        background-color: ${({ theme }) => theme.colors.gray2};
+        color: ${({ theme }) => theme.colors.gray10};
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        
+        .item {
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.75rem;
+          font-size: 0.875rem;
+          line-height: 1.25rem;
+          white-space: nowrap;
+          cursor: pointer;
+
+          &:hover {
+            background-color: ${({ theme }) => theme.colors.gray4};
+          }
         }
       }
     }
@@ -163,4 +217,6 @@ const StyledWrapper = styled.div`
       }
     }
   }
-` 
+`
+
+export default FeedHeader 
