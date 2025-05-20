@@ -4,7 +4,6 @@ import SearchInput from "./SearchInput"
 import { FeedHeader } from "./FeedHeader"
 import Footer from "./Footer"
 import styled from "@emotion/styled"
-import TagList from "./TagList"
 import MobileProfileCard from "./MobileProfileCard"
 import ProfileCard from "./ProfileCard"
 import ServiceCard from "./ServiceCard"
@@ -20,6 +19,10 @@ type Props = {}
 const Feed: React.FC<Props> = () => {
   const [q, setQ] = useState("")
   const [view, setView] = useState<'list' | 'grid'>('grid')
+
+  const handleViewChange = (newView: 'list' | 'grid') => {
+    setView(newView)
+  }
 
   return (
     <StyledWrapper>
@@ -38,7 +41,9 @@ const Feed: React.FC<Props> = () => {
         <div className="tags">
           <CategoryList />
         </div>
-        <FeedHeader view={view} onViewChange={setView} />
+        <div>
+          <FeedHeader view={view} onViewChange={handleViewChange} />
+        </div>
         <hr className="divider" />
         <PostList q={q} view={view} />
         <div className="footer">

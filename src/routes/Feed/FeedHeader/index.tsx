@@ -1,14 +1,25 @@
-import React from "react"
+/** @jsxImportSource @emotion/react */
+import React, { Dispatch, SetStateAction } from "react"
 import styled from "@emotion/styled"
 import { useRouter } from "next/router"
-import { LayoutGrid, AlignLeft } from "lucide-react"
+import { Theme } from "@emotion/react"
+import { Colors } from "src/styles/colors"
 
-type Props = {
-  view: 'list' | 'grid'
-  onViewChange: (view: 'list' | 'grid') => void
+declare module "@emotion/react" {
+  export interface Theme {
+    scheme: "light" | "dark"
+    colors: Colors
+  }
 }
 
-export const FeedHeader = ({ view, onViewChange }: Props) => {
+type ViewType = 'list' | 'grid'
+
+type FeedHeaderProps = {
+  view: ViewType
+  onViewChange: (view: ViewType) => void
+}
+
+export const FeedHeader: React.ComponentType<FeedHeaderProps> = ({ view, onViewChange }) => {
   const router = useRouter()
   const currentOrder = `${router.query.order || ``}` || "desc"
 
