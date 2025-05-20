@@ -10,9 +10,6 @@ type Props = {
 }
 
 const PostHeader: React.FC<Props> = ({ data }) => {
-  console.log("PostHeader data:", data); // 데이터 확인용 로그
-  console.log("PostHeader github data:", data.github); // GitHub 데이터 확인용 로그
-
   return (
     <StyledWrapper>
       <h1 className="title">{data.title}</h1>
