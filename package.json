@@ -7,9 +7,9 @@
     "url": "https://github.com/morethanmin/morethan-log.git"
   },
   "scripts": {
-    "dev": "bun --bun next dev",
-    "build": "bun --bun next build",
-    "start": "bun --bun next start"
+    "dev": "yarn next dev",
+    "build": "yarn next build",
+    "start": "yarn next start"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
