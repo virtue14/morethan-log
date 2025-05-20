@@ -36,6 +36,9 @@ export type TPost = {
   createdTime: string
   fullWidth: boolean
   thumbnail?: string
+  github?: string
+  swagger?: string
+  deploy?: string
 }
 
 export type PostDetail = TPost & {
