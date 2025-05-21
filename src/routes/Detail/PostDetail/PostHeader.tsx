@@ -15,28 +15,6 @@ const PostHeader: React.FC<Props> = ({ data }) => {
       <h1 className="title">{data.title}</h1>
       {data.type[0] !== "Paper" && (
         <nav>
-          <div className="info">
-            {data.author && data.author[0] && data.author[0].name && (
-              <>
-                <div className="author">
-                  <Image
-                    css={{ borderRadius: "50%" }}
-                    src={data.author[0].profile_photo || CONFIG.profile.image}
-                    alt="profile_photo"
-                    width={24}
-                    height={24}
-                  />
-                  <div className="">{data.author[0].name}</div>
-                </div>
-                <div className="hr"></div>
-              </>
-            )}
-            <div className="date">
-              {data?.date?.start_date && data?.date?.end_date
-                ? `${formatDate(data.date.start_date, CONFIG.lang)} ~ ${formatDate(data.date.end_date, CONFIG.lang)}`
-                : formatDate(data?.date?.start_date || data.createdTime, CONFIG.lang)}
-            </div>
-          </div>
           <div className="links">
             {data.github && (
               <div className="link-item">
@@ -81,6 +59,34 @@ const PostHeader: React.FC<Props> = ({ data }) => {
               </div>
             )}
           </div>
+          <div className="info">
+            <div className="info-row">
+              {(data?.date?.start_date || data?.date?.end_date) && (
+                <div className="date">
+                  <span className="period">기간</span>
+                  {data?.date?.start_date && data?.date?.end_date
+                    ? `${formatDate(data.date.start_date, CONFIG.lang)} ~ ${formatDate(data.date.end_date, CONFIG.lang)}`
+                    : formatDate(data?.date?.start_date || data.createdTime, CONFIG.lang)}
+                </div>
+              )}
+            </div>
+            <div className="info-row">
+              {data.role && (
+                <div className="info-item">
+                  <span className="label">역할</span>
+                  {data.role}
+                </div>
+              )}
+            </div>
+            <div className="info-row">
+              {data.personnel && (
+                <div className="info-item">
+                  <span className="label">인원</span>
+                  {data.personnel}
+                </div>
+              )}
+            </div>
+          </div>
         </nav>
       )}
     </StyledWrapper>
@@ -96,42 +102,14 @@ const StyledWrapper = styled.div`
     font-weight: 700;
   }
   nav {
-    margin-top: 1.5rem;
     color: ${({ theme }) => theme.colors.gray11};
     
-    .info {
-      display: flex;
-      margin-bottom: 0.75rem;
-      gap: 0.75rem;
-      align-items: center;
-      
-      .author {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-      }
-      
-      .hr {
-        margin-top: 0.25rem;
-        margin-bottom: 0.25rem;
-        align-self: stretch;
-        width: 1px;
-        background-color: ${({ theme }) => theme.colors.gray10};
-      }
-      
-      .date {
-        margin-right: 0.5rem;
-        @media (min-width: 768px) {
-          margin-left: 0;
-        }
-      }
-    }
-
     .links {
       display: flex;
       flex-direction: row;
+      flex-wrap: wrap;
       gap: 0.5rem;
-      margin-top: 0.75rem;
+      padding-top: 0.5rem;
       
       .link-item {
         .link {
@@ -141,9 +119,9 @@ const StyledWrapper = styled.div`
           color: ${({ theme }) => theme.colors.gray11};
           transition: color 0.2s ease;
           font-size: 0.875rem;
-          padding: 0.5rem;
           border-radius: 0.375rem;
           max-width: 100%;
+          padding: 0.25rem;
           
           &:hover {
             color: ${({ theme }) => theme.colors.gray12};
@@ -153,9 +131,56 @@ const StyledWrapper = styled.div`
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+
+            @media (max-width: 768px) {
+              display: none;
+            }
+          }
+
+          @media (max-width: 768px) {
+            padding: 0.5rem;
+            background-color: ${({ theme }) => theme.colors.gray5};
+            border-radius: 9999px;
           }
         }
       }
+    }
+
+    .info {
+      display: flex;
+      margin-top: 1rem;
+      margin-bottom: 0.75rem;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .info-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+      }
+      
+      .date, .info-item {
+        display: flex;
+        align-items: center;
+        color: ${({ theme }) => theme.colors.gray11};
+      }
+
+      .period, .label {
+        margin-right: 0.5rem;
+        color: ${({ theme }) => theme.colors.gray12};
+      }
+    }
+  }
+
+  .date {
+    margin-right: 0.5rem;
+    @media (min-width: 768px) {
+      margin-left: 0;
+    }
+
+    .period {
+      margin-right: 0.5rem;
+      color: ${({ theme }) => theme.colors.gray12};
     }
   }
 `
