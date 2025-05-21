@@ -18,9 +18,11 @@ export type TPostType = "Post" | "Paper" | "Page"
 export type TPost = {
   id: string
   date?: {
-    start_date?: string;
-    end_date?: string;
-  };
+    start_date?: string | undefined;
+    end_date?: string | undefined;
+  } | undefined;
+  role?: string;
+  personnel?: string;
   type: TPostType[]
   slug: string
   tags?: string[]
