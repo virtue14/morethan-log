@@ -24,9 +24,11 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
     } else if (startDate) {
       return formatDate(startDate, CONFIG.lang);
     } else {
-      return "날짜 없음";
+      return null;
     }
   };
+
+  const formattedDate = getFormattedDate();
 
   return (
     <StyledWrapper href={`/${data.slug}`} view={view}>
@@ -50,9 +52,11 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
           <header className="top">
             <h2>{data.title}</h2>
           </header>
-          <div className="date">
-            <div className="content">{getFormattedDate()}</div>
-          </div>
+          {formattedDate && (
+            <div className="date">
+              <div className="content">{formattedDate}</div>
+            </div>
+          )}
           <div className="summary">
             <p>{data.summary}</p>
           </div>
@@ -165,6 +169,10 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
+        max-height: 3rem;
+        overflow: hidden;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
       }
     }
   }
