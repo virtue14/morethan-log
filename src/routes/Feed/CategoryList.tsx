@@ -1,7 +1,7 @@
 import { useRouter } from "next/router"
 import React from "react"
 import styled from "@emotion/styled"
-import { DEFAULT_CATEGORY } from "src/constants"
+import { DEFAULT_CATEGORY, TEAM, PERSONAL } from "src/constants"
 import { useCategoriesQuery } from "src/hooks/useCategoriesQuery"
 
 type Props = {}
@@ -28,18 +28,22 @@ const CategoryList: React.FC<Props> = () => {
           onClick={() => handleCategoryClick(DEFAULT_CATEGORY)}
         >
           {DEFAULT_CATEGORY}
+          <span className="count">({Object.values(categories).reduce((acc, curr) => acc + curr, 0)})</span>
         </a>
-        {Object.entries(categories)
-          .filter(([key]) => key !== DEFAULT_CATEGORY)
-          .map(([category]) => (
-            <a
-              key={category}
-              data-active={currentCategory === category}
-              onClick={() => handleCategoryClick(category)}
-            >
-              {category}
-            </a>
-          ))}
+        <a
+          data-active={currentCategory === TEAM}
+          onClick={() => handleCategoryClick(TEAM)}
+        >
+          {TEAM}
+          <span className="count">({categories[TEAM] || 0})</span>
+        </a>
+        <a
+          data-active={currentCategory === PERSONAL}
+          onClick={() => handleCategoryClick(PERSONAL)}
+        >
+          {PERSONAL}
+          <span className="count">({categories[PERSONAL] || 0})</span>
+        </a>
       </div>
     </StyledWrapper>
   )
@@ -48,40 +52,38 @@ const CategoryList: React.FC<Props> = () => {
 export default CategoryList
 
 const StyledWrapper = styled.div`
+  @media (max-width: 1023px) {
+    display: none;
+  }
+
   .list {
     display: flex;
-    overflow-x: auto;
-    padding: 0.5rem;
-    gap: 1rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    @media (min-width: 1024px) {
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
+    flex-direction: column;
+    gap: 0.5rem;
 
     a {
+      display: flex;
+      padding: 0.5rem;
+      gap: 0.5rem;
+      align-items: center;
+      border-radius: 0.75rem;
       cursor: pointer;
-      color: ${({ theme }) => theme.colors.gray10};
-      font-size: 0.875rem;
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.375rem;
-      transition: all 0.2s;
-      white-space: nowrap;
-      flex-shrink: 0;
+      color: ${({ theme }) => theme.colors.gray11};
+      
+      &[data-active="true"] {
+        color: ${({ theme }) => theme.colors.gray12};
+        background-color: ${({ theme }) => theme.colors.gray5};
+        font-weight: 500;
+      }
 
       &:hover {
         color: ${({ theme }) => theme.colors.gray12};
+        background-color: ${({ theme }) => theme.colors.gray5};
       }
 
-      &[data-active="true"] {
-        color: ${({ theme }) => theme.colors.gray12};
-        font-weight: 500;
+      .count {
+        font-size: 0.875rem;
+        color: ${({ theme }) => theme.colors.gray10};
       }
     }
   }
