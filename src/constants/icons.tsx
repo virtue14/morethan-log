@@ -20,6 +20,10 @@ const IconWrapper: React.FC<IconProps> = ({ src, alt, width = "1.25rem", height 
 
 export const ICONS: { [key: string]: ReactNode } = {
   // Backend
+  "Kotlin": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1635384696/noticon/t2v5vtq6gp7d0bgspmyh.png"
+    alt="Kotlin Logo"
+  />,
   "Java": <IconWrapper
     src="https://www.svgrepo.com/show/452234/java.svg"
     alt="Java Logo"
@@ -74,15 +78,43 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://www.svgrepo.com/show/452045/js.svg"
     alt="JavaScript Logo"
   />,
+  "TypeScript": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566913457/noticon/eh4d0dnic4n1neth3fui.png"
+    alt="TypeScript Logo"
+  />,
+  "ReactJS": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566557331/noticon/d5hqar2idkoefh6fjtpu.png"
+    alt="ReactJS Logo"
+  />,
   "VueJS": <IconWrapper
     src="https://www.svgrepo.com/show/452130/vue.svg"
-    alt="Vue.js Logo"
+    alt="ReactJS Logo"
+  />,
+  "Thymeleaf": <IconWrapper
+    src="https://www.thymeleaf.org/images/thymeleaf.png"
+    alt="Thymeleaf Logo"
   />,
 
   // Database
   "MariaDB": <IconWrapper
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566920129/noticon/r9gn1ilil1r8ar4w59dj.png"
     alt="MariaDB Logo"
+  />,
+  "MySQL": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1603423163/noticon/az0cvs28lm7gxoowlsva.png"
+    alt="MySQL Logo"
+  />,
+  "PostgreSQL": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566913379/noticon/uiite75rxvkvcki3mr4u.png"
+    alt="PostgreSQL Logo"
+  />,
+  "Redis": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566913679/noticon/xlnsjihvjxllech0hawu.png"
+    alt="Redis Logo"
+  />,
+  "MongoDB": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1581824691/noticon/hmvqgvug8zl7etwmabuq.png"
+    alt="MongoDB Logo"
   />,
 
   // Architecture
@@ -129,9 +161,41 @@ export const ICONS: { [key: string]: ReactNode } = {
     alt="Miro Logo"
   />,
 
+  // CI/CD
+  "Docker": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1698294991/noticon/seoaznmbzm3pcp2um3d3.png"
+    alt="Docker Logo"
+  />,
+  "GitHub Actions": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1673248072/noticon/uj1sljza7nnsj0lpilwk.png"
+    alt="GitHub Actions Logo"
+  />,
+
+  // Infra
+  "AWS": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1593063747/noticon/v54j0lavn52l6ff61sga.png"
+    alt="AWS Logo"
+  />,
+  "Oracle Cloud": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1610429880/noticon/dpxowdqcrxyipzhsb0y1.png"
+    alt="Oracle Cloud Logo"
+  />,
+  "AWS EC2": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566914173/noticon/kos1xkevxtr81zgwvyoe.svg"
+    alt="AWS EC2 Logo"
+  />,
+  "AWS Route53": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
+    alt="AWS Route53 Logo"
+  />,
+  "AWS S3": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
+    alt="AWS S3 Logo"
+  />,
+
   // Link Icons
   "Deploy": <IconWrapper
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1590043914/noticon/xe5nasyjil6mn6vk8c4s.png"
     alt="Deploy Logo"
   />,
-} 
+}

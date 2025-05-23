@@ -9,7 +9,7 @@ type Props = {
   data: TPost
 }
 
-type Category = 'Backend' | 'Frontend' | 'Database' | 'Architecture' | 'API' | 'Testing' | 'Collaboration';
+type Category = 'Backend' | 'Frontend' | 'Database' | 'Architecture' | 'CI/CD' | 'Infra' | 'API' | 'Testing' | 'Collaboration';
 
 type TechStacksType = {
   [key: string]: string[] | undefined;
@@ -19,16 +19,56 @@ const PostHeader: React.FC<Props> = ({ data }) => {
   const [activeTab, setActiveTab] = useState<Category>('Backend');
   const [isExpanded, setIsExpanded] = useState(false);
   const techListRef = useRef<HTMLUListElement>(null);
+  const techContainerRef = useRef<HTMLDivElement>(null);
   const [needsExpand, setNeedsExpand] = useState(false);
 
   useEffect(() => {
-    if (techListRef.current) {
-      const element = techListRef.current;
-      setNeedsExpand(element.scrollHeight > element.clientHeight);
+    if (techListRef.current && techContainerRef.current) {
+      const list = techListRef.current;
+      const container = techContainerRef.current;
+      
+      // 컨테이너의 높이가 아이템 한 줄의 높이보다 크면 더보기 버튼 표시
+      const itemHeight = list.children[0]?.getBoundingClientRect().height || 0;
+      const containerHeight = list.getBoundingClientRect().height;
+      
+      setNeedsExpand(containerHeight > itemHeight * 1.5); // 1.5는 여유값
+      
+      if (!isExpanded && needsExpand) {
+        list.style.maxHeight = `${itemHeight}px`;
+      } else {
+        list.style.maxHeight = 'none';
+      }
     }
-  }, [activeTab, data]);
+  }, [activeTab, data, isExpanded]);
 
-  const categories: Category[] = ['Backend', 'Frontend', 'Database', 'Architecture', 'API', 'Testing', 'Collaboration'];
+  const categories: Category[] = ['Backend', 'Frontend', 'Database', 'Architecture', 'CI/CD', 'Infra', 'API', 'Testing', 'Collaboration'];
+
+  const getAvailableCategories = (): Category[] => {
+    const categoryMap: { [key in Category]: keyof TPost } = {
+      'Backend': 'backend',
+      'Frontend': 'frontend',
+      'Database': 'database',
+      'Architecture': 'architecture',
+      'CI/CD': 'cicd',
+      'Infra': 'infra',
+      'API': 'api',
+      'Testing': 'testing',
+      'Collaboration': 'collaboration'
+    };
+
+    return categories.filter(category => {
+      const key = categoryMap[category];
+      return Array.isArray(data[key]) && data[key]?.length > 0;
+    });
+  };
+
+  const availableCategories = getAvailableCategories();
+  
+  useEffect(() => {
+    if (availableCategories.length > 0 && !availableCategories.includes(activeTab)) {
+      setActiveTab(availableCategories[0]);
+    }
+  }, [availableCategories]);
 
   const getFilteredTechStacks = (): TechStacksType => {
     const categoryMap: { [key in Category]: keyof TPost } = {
@@ -36,6 +76,8 @@ const PostHeader: React.FC<Props> = ({ data }) => {
       'Frontend': 'frontend',
       'Database': 'database',
       'Architecture': 'architecture',
+      'CI/CD': 'cicd',
+      'Infra': 'infra',
       'API': 'api',
       'Testing': 'testing',
       'Collaboration': 'collaboration'
@@ -43,7 +85,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
 
     const key = categoryMap[activeTab];
     return {
-      [key.toLowerCase()]: data[key] as string[] | undefined
+      [key]: data[key] as string[] | undefined
     };
   };
 
@@ -134,12 +176,12 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                 </div>
               )}
             </div>
-            {(data.backend || data.frontend || data.database || data.architecture || data.api || data.testing || data.collaboration) && (
+            {availableCategories.length > 0 && (
               <div className="tech-stacks">
                 <h3 className="tech-title">사용 기술</h3>
                 <div className="tabs-container">
                   <ul className="tabs">
-                    {categories.map((category) => (
+                    {availableCategories.map((category) => (
                       <li 
                         key={category} 
                         className={`tab-item ${activeTab === category ? 'active' : ''}`}
@@ -154,7 +196,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                     ))}
                   </ul>
                 </div>
-                <div className="tech-list-container">
+                <div className="tech-list-container" ref={techContainerRef}>
                   <ul 
                     ref={techListRef} 
                     className={`tech-list ${isExpanded ? 'expanded' : ''}`}
@@ -348,9 +390,11 @@ const StyledWrapper = styled.div`
             list-style: none;
             width: 100%;
             text-align: left;
+            transition: max-height 0.3s ease-in-out;
+            overflow: hidden;
 
             &.expanded {
-              max-height: none;
+              max-height: none !important;
             }
 
             .tech-item {

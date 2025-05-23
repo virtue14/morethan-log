@@ -48,6 +48,8 @@ export type TPost = {
   api?: string[]
   testing?: string[]
   collaboration?: string[]
+  cicd?: string[]
+  infra?: string[]
 }
 
 export type PostDetail = TPost & {

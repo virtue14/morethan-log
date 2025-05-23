@@ -1,11 +1,12 @@
 import Link from "next/link"
 import { CONFIG } from "site.config"
 import { formatDate } from "src/libs/utils"
-import Tag from "../../../components/Tag"
+import Tag from "src/components/Tag"
 import { TPost } from "../../../types"
 import Image from "next/image"
-import Category from "../../../components/Category"
+import Category from "src/components/Category"
 import styled from "@emotion/styled"
+import TechStack from "src/components/TechStack"
 
 type Props = {
   data: TPost
@@ -60,12 +61,14 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
           <div className="summary">
             <p>{data.summary}</p>
           </div>
-          <div className="tags">
-            {data.tags &&
-              data.tags.map((tag: string, idx: number) => (
-                <Tag key={idx}>{tag}</Tag>
-              ))}
+          <div className="tech-stack">
+            {data.tags && <TechStack tags={data.tags} size="small" />}
           </div>
+          {/*<div className="tags">*/}
+          {/*  {data.tags && data.tags.map((tag: string, idx: number) => (*/}
+          {/*    <Tag key={idx}>{tag}</Tag>*/}
+          {/*  ))}*/}
+          {/*</div>*/}
         </div>
       </article>
     </StyledWrapper>
@@ -163,6 +166,15 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
           line-height: 1.5;
           margin-bottom: 1rem;
         }
+      }
+
+      > .tech-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        max-height: 1.75rem;
+        overflow: hidden;
+        position: relative;
       }
 
       > .tags {
