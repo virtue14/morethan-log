@@ -41,6 +41,13 @@ export type TPost = {
   github?: string
   swagger?: string
   deploy?: string
+  backend?: string[]
+  frontend?: string[]
+  database?: string[]
+  architecture?: string[]
+  api?: string[]
+  testing?: string[]
+  collaboration?: string[]
 }
 
 export type PostDetail = TPost & {

@@ -1,15 +1,70 @@
 import { CONFIG } from "site.config"
 import { TPost } from "src/types"
 import { formatDate } from "src/libs/utils"
-import Image from "next/image"
-import React from "react"
+import React, { useEffect, useRef, useState } from "react"
 import styled from "@emotion/styled"
+import { ICONS } from "src/constants/icons"
 
 type Props = {
   data: TPost
 }
 
+type Category = 'Backend' | 'Frontend' | 'Database' | 'Architecture' | 'API' | 'Testing' | 'Collaboration';
+
+type TechStacksType = {
+  [key: string]: string[] | undefined;
+};
+
 const PostHeader: React.FC<Props> = ({ data }) => {
+  const [activeTab, setActiveTab] = useState<Category>('Backend');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const techListRef = useRef<HTMLUListElement>(null);
+  const [needsExpand, setNeedsExpand] = useState(false);
+
+  useEffect(() => {
+    if (techListRef.current) {
+      const element = techListRef.current;
+      setNeedsExpand(element.scrollHeight > element.clientHeight);
+    }
+  }, [activeTab, data]);
+
+  const categories: Category[] = ['Backend', 'Frontend', 'Database', 'Architecture', 'API', 'Testing', 'Collaboration'];
+
+  const getFilteredTechStacks = (): TechStacksType => {
+    const categoryMap: { [key in Category]: keyof TPost } = {
+      'Backend': 'backend',
+      'Frontend': 'frontend',
+      'Database': 'database',
+      'Architecture': 'architecture',
+      'API': 'api',
+      'Testing': 'testing',
+      'Collaboration': 'collaboration'
+    };
+
+    const key = categoryMap[activeTab];
+    return {
+      [key.toLowerCase()]: data[key] as string[] | undefined
+    };
+  };
+
+  const renderTechStacks = () => {
+    const filteredStacks = getFilteredTechStacks();
+    return Object.entries(filteredStacks).map(([category, items]) => {
+      if (!items) return null;
+      return items.map((item: string, index: number) => (
+        <li 
+          key={`${category}-${index}`} 
+          className="tech-item"
+        >
+          <span className="tech-icon">
+            {ICONS[item]}
+          </span>
+          <span className="tech-name">{item}</span>
+        </li>
+      ));
+    });
+  };
+
   return (
     <StyledWrapper>
       <h1 className="title">{data.title}</h1>
@@ -22,9 +77,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="link github">
-                  <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-                  </svg>
+                  {ICONS.GitHub}
                   <span className="url">GitHub 바로가기</span>
                 </a>
               </div>
@@ -35,12 +88,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="link swagger">
-                  <img 
-                    src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.21.0/favicon-32x32.png"
-                    alt="Swagger Logo"
-                    width={20}
-                    height={20}
-                  />
+                  {ICONS['Swagger']}
                   <span className="url">Swagger 바로가기</span>
                 </a>
               </div>
@@ -51,9 +99,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="link deploy">
-                  <svg height="20" width="20" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                  </svg>
+                  {ICONS.Deploy}
                   <span className="url">홈페이지 바로가기</span>
                 </a>
               </div>
@@ -63,29 +109,69 @@ const PostHeader: React.FC<Props> = ({ data }) => {
             <div className="info-row">
               {(data?.date?.start_date || data?.date?.end_date) && (
                 <div className="date">
-                  <span className="period">기간</span>
-                  {data?.date?.start_date && data?.date?.end_date
-                    ? `${formatDate(data.date.start_date, CONFIG.lang)} ~ ${formatDate(data.date.end_date, CONFIG.lang)}`
-                    : formatDate(data?.date?.start_date || data.createdTime, CONFIG.lang)}
+                  <h3 className="info-title">기간</h3>
+                  <span className="info-content">
+                    {data?.date?.start_date && data?.date?.end_date
+                      ? `${formatDate(data.date.start_date, CONFIG.lang)} ~ ${formatDate(data.date.end_date, CONFIG.lang)}`
+                      : formatDate(data?.date?.start_date || data.createdTime, CONFIG.lang)}
+                  </span>
                 </div>
               )}
             </div>
             <div className="info-row">
               {data.role && (
                 <div className="info-item">
-                  <span className="label">역할</span>
-                  {data.role}
+                  <h3 className="info-title">역할</h3>
+                  <span className="info-content">{data.role}</span>
                 </div>
               )}
             </div>
             <div className="info-row">
               {data.personnel && (
                 <div className="info-item">
-                  <span className="label">인원</span>
-                  {data.personnel}
+                  <h3 className="info-title">인원</h3>
+                  <span className="info-content">{data.personnel}</span>
                 </div>
               )}
             </div>
+            {(data.backend || data.frontend || data.database || data.architecture || data.api || data.testing || data.collaboration) && (
+              <div className="tech-stacks">
+                <h3 className="tech-title">사용 기술</h3>
+                <div className="tabs-container">
+                  <ul className="tabs">
+                    {categories.map((category) => (
+                      <li 
+                        key={category} 
+                        className={`tab-item ${activeTab === category ? 'active' : ''}`}
+                      >
+                        <button onClick={() => {
+                          setActiveTab(category);
+                          setIsExpanded(false);
+                        }}>
+                          {category}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="tech-list-container">
+                  <ul 
+                    ref={techListRef} 
+                    className={`tech-list ${isExpanded ? 'expanded' : ''}`}
+                  >
+                    {renderTechStacks()}
+                  </ul>
+                  {needsExpand && (
+                    <button 
+                      className="expand-button"
+                      onClick={() => setIsExpanded(!isExpanded)}
+                    >
+                      {isExpanded ? '접기' : '더보기'}
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </nav>
       )}
@@ -155,19 +241,198 @@ const StyledWrapper = styled.div`
 
       .info-row {
         display: flex;
-        gap: 0.75rem;
+        gap: 1.5rem;
         align-items: center;
       }
       
       .date, .info-item {
         display: flex;
         align-items: center;
+        gap: 0.5rem;
         color: ${({ theme }) => theme.colors.gray11};
       }
 
-      .period, .label {
-        margin-right: 0.5rem;
+      .info-title {
+        font-size: 1rem;
+        font-weight: 700;
         color: ${({ theme }) => theme.colors.gray12};
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+      }
+
+      .info-content {
+        color: ${({ theme }) => theme.colors.gray11};
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+
+      .tech-stacks {
+        margin-top: 1.5rem;
+
+        .tech-title {
+          font-size: 1rem;
+          font-weight: 700;
+          color: ${({ theme }) => theme.colors.gray12};
+          margin: 0 0 1rem 0;
+          padding: 0;
+          line-height: 1.5;
+        }
+
+        .tabs-container {
+          margin-bottom: 2rem;
+          border-bottom: 1px solid ${({ theme }) => theme.colors.gray6};
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          
+          &::-webkit-scrollbar {
+            display: none;
+          }
+
+          .tabs {
+            display: flex;
+            gap: 2rem;
+            white-space: nowrap;
+            padding: 0;
+            margin: 0;
+            list-style: none;
+            
+            .tab-item {
+              position: relative;
+              margin-bottom: -1px;
+
+              button {
+                padding: 0.75rem 0;
+                color: ${({ theme }) => theme.colors.gray11};
+                font-size: 0.9375rem;
+                border: none;
+                background: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                outline: none;
+                font-weight: 500;
+                white-space: nowrap;
+
+                &:hover {
+                  color: ${({ theme }) => theme.colors.gray12};
+                }
+              }
+
+              &.active {
+                button {
+                  color: ${({ theme }) => theme.colors.gray12};
+                  font-weight: 600;
+                }
+
+                &::after {
+                  content: '';
+                  position: absolute;
+                  bottom: 0;
+                  left: 0;
+                  right: 0;
+                  height: 2px;
+                  background-color: ${({ theme }) => theme.colors.gray12};
+                  border-radius: 2px 2px 0 0;
+                }
+              }
+            }
+          }
+        }
+
+        .tech-list-container {
+          position: relative;
+          
+          .tech-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            width: 100%;
+            text-align: left;
+
+            &.expanded {
+              max-height: none;
+            }
+
+            .tech-item {
+              margin: 0;
+              padding: 6px 10px;
+              border: 1px solid hsla(225, 5%, 46%, 0.08);
+              box-sizing: border-box;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              border-radius: 8px;
+              gap: 6px;
+              font-family: inherit;
+              font-size: inherit;
+              line-height: inherit;
+              color: inherit;
+              transition: all 0.2s ease;
+              cursor: default;
+
+              &:hover {
+                transform: translateY(-2px);
+                box-shadow: ${({ theme }) => theme.colors.gray1 === '#fff' 
+                  ? '0 4px 8px rgba(0, 0, 0, 0.1)'
+                  : '0 4px 8px rgba(0, 0, 0, 0.3)'
+                };
+                border-color: ${({ theme }) => theme.colors.gray6};
+              }
+
+              .tech-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 1.5rem;
+                height: 1.5rem;
+                margin: 0;
+                padding: 0;
+                border: 0;
+                box-sizing: border-box;
+                
+                img {
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                }
+              }
+
+              .tech-name {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                box-sizing: border-box;
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+                letter-spacing: 0.0145em;
+                font-weight: 500;
+                color: ${({ theme }) => theme.colors.gray12};
+                font-family: inherit;
+              }
+            }
+          }
+
+          .expand-button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            background: none;
+            border: none;
+            color: ${({ theme }) => theme.colors.gray11};
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            font-weight: 500;
+
+            &:hover {
+              color: ${({ theme }) => theme.colors.gray12};
+            }
+          }
+        }
       }
     }
   }
