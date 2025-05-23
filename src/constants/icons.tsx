@@ -82,9 +82,9 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566913457/noticon/eh4d0dnic4n1neth3fui.png"
     alt="TypeScript Logo"
   />,
-  "ReactJS": <IconWrapper
+  "React": <IconWrapper
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566557331/noticon/d5hqar2idkoefh6fjtpu.png"
-    alt="ReactJS Logo"
+    alt="React Logo"
   />,
   "VueJS": <IconWrapper
     src="https://www.svgrepo.com/show/452130/vue.svg"
