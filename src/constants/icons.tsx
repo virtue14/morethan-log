@@ -56,6 +56,10 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://oauth.net/images/oauth-2-sm.png"
     alt="OAuth Logo"
   />,
+  "JWT": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1569654347/noticon/mdujedvj9w8c9rz9phny.png"
+    alt="JWT Logo"
+  />,
 
   // Frontend
   "HTML": <IconWrapper
