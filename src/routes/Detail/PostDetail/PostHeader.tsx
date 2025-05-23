@@ -252,7 +252,7 @@ const StyledWrapper = styled.div`
         color: ${({ theme }) => theme.colors.gray11};
       }
 
-      .info-title {
+      .info-title, .tech-title {
         font-size: 1rem;
         font-weight: 700;
         color: ${({ theme }) => theme.colors.gray12};
@@ -268,13 +268,10 @@ const StyledWrapper = styled.div`
       }
 
       .tech-stacks {
-        margin-top: 1.5rem;
-
         .tech-title {
           font-size: 1rem;
           font-weight: 700;
           color: ${({ theme }) => theme.colors.gray12};
-          margin: 0 0 1rem 0;
           padding: 0;
           line-height: 1.5;
         }
@@ -304,13 +301,13 @@ const StyledWrapper = styled.div`
               button {
                 padding: 0.75rem 0;
                 color: ${({ theme }) => theme.colors.gray11};
-                font-size: 0.9375rem;
+                font-size: 0.875rem;
                 border: none;
                 background: none;
                 cursor: pointer;
                 transition: all 0.2s ease;
                 outline: none;
-                font-weight: 500;
+                font-weight: 400;
                 white-space: nowrap;
 
                 &:hover {
@@ -321,7 +318,7 @@ const StyledWrapper = styled.div`
               &.active {
                 button {
                   color: ${({ theme }) => theme.colors.gray12};
-                  font-weight: 600;
+                  font-weight: 500;
                 }
 
                 &::after {
