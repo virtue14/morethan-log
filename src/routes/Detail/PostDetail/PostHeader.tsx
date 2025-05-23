@@ -58,7 +58,8 @@ const PostHeader: React.FC<Props> = ({ data }) => {
 
     return categories.filter(category => {
       const key = categoryMap[category];
-      return Array.isArray(data[key]) && data[key]?.length > 0;
+      const value = data[key];
+      return Array.isArray(value) && value.length > 0;
     });
   };
 
