@@ -85,12 +85,15 @@ export default PostList
 const StyledWrapper = styled.div<{ view: 'list' | 'grid' }>`
   .posts-container {
     display: ${({ view }) => view === 'grid' ? 'grid' : 'block'};
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
     margin-bottom: 2rem;
+    width: 100%;
+    max-width: 100%;
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
+      gap: 1rem;
     }
   }
 `

@@ -196,6 +196,10 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1610429880/noticon/dpxowdqcrxyipzhsb0y1.png"
     alt="Oracle Cloud Logo"
   />,
+  "AWS Elastic Beanstalk": <IconWrapper
+    src="https://a.b.cdn.console.awsstatic.com/a/v1/WWHSRL5VGMSHMYFU2N56KMDGDT3LKEEACUMREKPRNIFSVSN65XYA/icon/d43b67a293d39d11b046bd1813c804cb-4bc0ce71c93950e1ad695b25a4f1d4b5.svg"
+    alt="AWS Elastic Beanstalk Logo"
+  />,
   "AWS EC2": <IconWrapper
     src="https://a.b.cdn.console.awsstatic.com/a/v1/RHSMMGZKYJXPPNI2IOC6Z63HJEW4FD5ZYMKJSXD7HQ5IPUTQR2TQ/icon/d88319dfa5d204f019b4284149886c59-7d586ea82f792b61a8c87de60565133d.svg"
     alt="AWS EC2 Logo"
