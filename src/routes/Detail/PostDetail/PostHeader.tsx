@@ -21,25 +21,34 @@ const PostHeader: React.FC<Props> = ({ data }) => {
   const techListRef = useRef<HTMLUListElement>(null);
   const techContainerRef = useRef<HTMLDivElement>(null);
   const [needsExpand, setNeedsExpand] = useState(false);
+  const [itemHeight, setItemHeight] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(0);
 
   useEffect(() => {
     if (techListRef.current && techContainerRef.current) {
       const list = techListRef.current;
       const container = techContainerRef.current;
+      const firstItem = list.children[0];
       
-      // 컨테이너의 높이가 아이템 한 줄의 높이보다 크면 더보기 버튼 표시
-      const itemHeight = list.children[0]?.getBoundingClientRect().height || 0;
-      const containerHeight = list.getBoundingClientRect().height;
-      
-      setNeedsExpand(containerHeight > itemHeight * 1.5); // 1.5는 여유값
-      
-      if (!isExpanded && needsExpand) {
-        list.style.maxHeight = `${itemHeight}px`;
-      } else {
-        list.style.maxHeight = 'none';
+      if (firstItem) {
+        const itemHeight = firstItem.getBoundingClientRect().height;
+        const containerHeight = list.scrollHeight;
+        setItemHeight(itemHeight);
+        setContainerHeight(containerHeight);
+        
+        // 두 줄을 넘어가는지 체크 (여백 포함)
+        const twoLinesHeight = itemHeight * 2 + 16; // 16px는 아이템 간 간격
+        setNeedsExpand(containerHeight > twoLinesHeight);
+        
+        // 두 줄로 제한
+        if (!isExpanded) {
+          list.style.maxHeight = `${twoLinesHeight}px`;
+        } else {
+          list.style.maxHeight = 'none';
+        }
       }
     }
-  }, [activeTab, data, isExpanded]);
+  }, [activeTab, isExpanded]);
 
   const categories: Category[] = ['Backend', 'Frontend', 'Database', 'Architecture', 'DevOps&Infra', 'API', 'Testing', 'Collaboration'];
 
@@ -380,6 +389,7 @@ const StyledWrapper = styled.div`
 
         .tech-list-container {
           position: relative;
+          overflow: hidden;
           
           .tech-list {
             display: flex;
@@ -398,11 +408,12 @@ const StyledWrapper = styled.div`
             }
 
             .tech-item {
+              height: 36px; // 고정 높이 설정
               margin: 0;
               padding: 6px 10px;
               border: 1px solid hsla(225, 5%, 46%, 0.08);
               box-sizing: border-box;
-              display: flex;
+              display: inline-flex;
               align-items: center;
               justify-content: center;
               border-radius: 8px;
@@ -413,6 +424,13 @@ const StyledWrapper = styled.div`
               color: inherit;
               transition: all 0.2s ease;
               cursor: default;
+              white-space: nowrap;
+
+              @media (max-width: 768px) {
+                height: 32px; // 모바일에서 더 작은 높이
+                padding: 4px 8px;
+                font-size: 0.875rem;
+              }
 
               &:hover {
                 transform: translateY(-2px);

@@ -150,6 +150,14 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://junit.org/junit5/assets/img/junit5-logo.png"
     alt="JUnit Logo"
   />,
+  "Kotest": <IconWrapper
+    src="https://kotest.io/img/logo.png"
+    alt="Kotest Logo"
+  />,
+  "Mockito": <IconWrapper
+    src="https://raw.githubusercontent.com/mockito/mockito.github.io/master/img/logo%402x.png"
+    alt="Mockito Logo"
+  />,
 
   // DevOps & Infra
   "Docker": <IconWrapper
@@ -164,6 +172,18 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566778391/noticon/l0uiouhpeiq31huqu7ft.jpg"
     alt="Jenkins Logo"
   />,
+  "Prometheus": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1629972087/noticon/uhlx0ddln1ygz7kxhkjw.png"
+    alt="Prometheus Logo"
+  />,
+  "Grafana": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1616658979/noticon/lcugxam6owivokgw1psc.png"
+    alt="Grafana Logo"
+  />,
+  "Sentry": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1600767958/noticon/qreyezxkjkizie43tguj.png"
+    alt="Sentry Logo"
+  />,
   "Kubernetes": <IconWrapper
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1643226154/noticon/wdbbwmhayat3eptf80zb.png"
     alt="Kubernetes Logo"
@@ -177,15 +197,15 @@ export const ICONS: { [key: string]: ReactNode } = {
     alt="Oracle Cloud Logo"
   />,
   "AWS EC2": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566914173/noticon/kos1xkevxtr81zgwvyoe.svg"
+    src="https://a.b.cdn.console.awsstatic.com/a/v1/RHSMMGZKYJXPPNI2IOC6Z63HJEW4FD5ZYMKJSXD7HQ5IPUTQR2TQ/icon/d88319dfa5d204f019b4284149886c59-7d586ea82f792b61a8c87de60565133d.svg"
     alt="AWS EC2 Logo"
   />,
-  "AWS Route53": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
-    alt="AWS Route53 Logo"
+  "AWS Route 53": <IconWrapper
+    src="https://a.b.cdn.console.awsstatic.com/a/v1/HNYUD5LSRDESBT7YPQWDDWYOM2WXFQZBY44MBW4XDC4S2NIYAG4Q/icon/f5d2c00d40914bff4f82f29f9ef768bc-53a84099cf556710383a52b4612a8612.svg"
+    alt="AWS Route 53 Logo"
   />,
   "AWS S3": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
+    src="https://a.b.cdn.console.awsstatic.com/a/v1/DKY2SIL5N3MJQCULDNOQE7TKLNQIUXRSOHBJKJGQAHLZO7TLH3TQ/icon/c0828e0381730befd1f7a025057c74fb-43acc0496e64afba82dbc9ab774dc622.svg"
     alt="AWS S3 Logo"
   />,
 
@@ -209,6 +229,10 @@ export const ICONS: { [key: string]: ReactNode } = {
   "Miro": <IconWrapper
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
     alt="Miro Logo"
+  />,
+  "Discord": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1640152045/noticon/albswwsjaaxvxbyhmwig.png"
+    alt="Discord Logo"
   />,
 
   // Link Icons
