@@ -99,7 +99,7 @@ export const ICONS: { [key: string]: ReactNode } = {
     alt="Vue Logo"
   />,
   "Thymeleaf": <IconWrapper
-    src="https://www.thymeleaf.org/images/thymeleaf.png"
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1592435734/noticon/ovcserf615eo3sbcbv8b.png"
     alt="Thymeleaf Logo"
   />,
 
@@ -211,6 +211,10 @@ export const ICONS: { [key: string]: ReactNode } = {
   "AWS S3": <IconWrapper
     src="https://a.b.cdn.console.awsstatic.com/a/v1/DKY2SIL5N3MJQCULDNOQE7TKLNQIUXRSOHBJKJGQAHLZO7TLH3TQ/icon/c0828e0381730befd1f7a025057c74fb-43acc0496e64afba82dbc9ab774dc622.svg"
     alt="AWS S3 Logo"
+  />,
+  "AWS Aurora and RDS": <IconWrapper
+    src="https://a.b.cdn.console.awsstatic.com/a/v1/6JW3RZSXOZ4EFR2HZBU6IIOCUZEIFKRK6JZDCUDHQVQXRMAORYWQ/icon/1d374ed2a6bcf601d7bfd4fc3dfd3b5d-c9f69416d978016b3191175f35e59226.svg"
+    alt="AWS Aurora and RDS Logo"
   />,
 
   // Collaboration
