@@ -7,61 +7,9 @@ type Props = {
   size?: 'small' | 'large'
 }
 
-const TAG_MAPPING: Record<string, string> = {
-  'mysql': 'MySQL',
-  'MySQL': 'MySQL',
-  'MYSQL': 'MySQL',
-  'postgresql': 'PostgreSQL',
-  'postgres': 'PostgreSQL',
-  'Postgres': 'PostgreSQL',
-  'PostgreSQL': 'PostgreSQL',
-  'react': 'React.js',
-  'React': 'React.js',
-  'ReactJS': 'React.js',
-  'React.js': 'React.js',
-  'nextjs': 'Next.js',
-  'next.js': 'Next.js',
-  'Next.js': 'Next.js',
-  'typescript': 'TypeScript',
-  'TypeScript': 'TypeScript',
-  'TS': 'TypeScript',
-  'node': 'Node.js',
-  'nodejs': 'Node.js',
-  'Node.js': 'Node.js',
-  'express': 'Express',
-  'Express': 'Express',
-  'expressjs': 'Express',
-  'spring': 'Spring',
-  'Spring': 'Spring',
-  'springboot': 'Spring Boot',
-  'spring-boot': 'Spring Boot',
-  'Spring Boot': 'Spring Boot',
-  'redis': 'Redis',
-  'Redis': 'Redis',
-  'REDIS': 'Redis',
-  'mongodb': 'MongoDB',
-  'MongoDB': 'MongoDB',
-  'docker': 'Docker',
-  'Docker': 'Docker',
-  'kubernetes': 'Kubernetes',
-  'Kubernetes': 'Kubernetes',
-  'k8s': 'Kubernetes',
-  'aws': 'AWS',
-  'AWS': 'AWS',
-  'elasticsearch': 'Elasticsearch',
-  'Elasticsearch': 'Elasticsearch',
-  'elastic': 'Elasticsearch',
-  'jenkins': 'Jenkins',
-  'Jenkins': 'Jenkins',
-  'git': 'Git',
-  'Git': 'Git',
-  'GIT': 'Git'
-}
-
 const TechStack: React.FC<Props> = ({ tags, size = 'large' }) => {
   const [visibleCount, setVisibleCount] = useState(tags.length)
   const containerRef = useRef<HTMLDivElement>(null)
-  const normalizedTags = tags.map(tag => TAG_MAPPING[tag] || tag)
 
   useEffect(() => {
     const calculateVisibleIcons = () => {
@@ -83,8 +31,8 @@ const TechStack: React.FC<Props> = ({ tags, size = 'large' }) => {
     }
   }, [tags, size])
 
-  const displayTags = normalizedTags.slice(0, visibleCount)
-  const remainingCount = normalizedTags.length - visibleCount
+  const displayTags = tags.slice(0, visibleCount)
+  const remainingCount = tags.length - visibleCount
 
   return (
     <StyledWrapper size={size}>

@@ -6,6 +6,23 @@ import getAllPageIds from "src/libs/utils/notion/getAllPageIds"
 import getPageProperties from "src/libs/utils/notion/getPageProperties"
 import { TPosts } from "src/types"
 
+const MAX_RETRIES = 3
+
+const retryWithBackoff = async <T>(
+  fn: () => Promise<T>,
+  retries = MAX_RETRIES
+): Promise<T> => {
+  try {
+    return await fn()
+  } catch (error) {
+    if (retries === 0) {
+      throw error
+    }
+    await new Promise(resolve => setTimeout(resolve, Math.pow(2, MAX_RETRIES - retries) * 1000))
+    return retryWithBackoff(fn, retries - 1)
+  }
+}
+
 /**
  * @param {{ includePages: boolean }} - false: posts only / true: include pages
  */
@@ -15,7 +32,7 @@ export const getPosts = async () => {
   let id = CONFIG.notionConfig.pageId as string
   const api = new NotionAPI()
 
-  const response = await api.getPage(id)
+  const response = await retryWithBackoff(() => api.getPage(id))
   id = idToUuid(id)
   const collection = Object.values(response.collection)[0]?.value
   const block = response.block
@@ -35,15 +52,21 @@ export const getPosts = async () => {
     const data = []
     for (let i = 0; i < pageIds.length; i++) {
       const id = pageIds[i]
-      const properties = (await getPageProperties(id, block, schema)) || null
-      // Add fullwidth, createdtime to properties
-      properties.createdTime = new Date(
-        block[id].value?.created_time
-      ).toString()
-      properties.fullWidth =
-        (block[id].value?.format as any)?.page_full_width ?? false
+      const properties = await retryWithBackoff(async () => {
+        const props = await getPageProperties(id, block, schema)
+        return props || null
+      })
 
-      data.push(properties)
+      if (properties) {
+        // Add fullwidth, createdtime to properties
+        properties.createdTime = new Date(
+          block[id].value?.created_time
+        ).toString()
+        properties.fullWidth =
+          (block[id].value?.format as any)?.page_full_width ?? false
+
+        data.push(properties)
+      }
     }
 
     // Sort by date

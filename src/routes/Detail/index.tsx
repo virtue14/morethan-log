@@ -3,6 +3,7 @@ import PostDetail from "./PostDetail"
 import PageDetail from "./PageDetail"
 import styled from "@emotion/styled"
 import usePostQuery from "src/hooks/usePostQuery"
+import CustomError from "src/routes/Error"
 
 type Props = {}
 
@@ -10,9 +11,10 @@ const Detail: React.FC<Props> = () => {
   const data = usePostQuery()
   useMermaidEffect()
 
-  if (!data) return null
+  if (!data || !data.type) return <CustomError />
+  
   return (
-    <StyledWrapper data-type={data.type}>
+    <StyledWrapper data-type={data.type[0]}>
       {data.type[0] === "Page" && <PageDetail />}
       {data.type[0] !== "Page" && <PostDetail />}
     </StyledWrapper>

@@ -9,7 +9,7 @@ type Props = {
   data: TPost
 }
 
-type Category = 'Backend' | 'Frontend' | 'Database' | 'Architecture' | 'CI/CD' | 'Infra' | 'API' | 'Testing' | 'Collaboration';
+type Category = 'Backend' | 'Frontend' | 'Database' | 'Architecture' | 'DevOps&Infra' | 'API' | 'Testing' | 'Collaboration';
 
 type TechStacksType = {
   [key: string]: string[] | undefined;
@@ -41,7 +41,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
     }
   }, [activeTab, data, isExpanded]);
 
-  const categories: Category[] = ['Backend', 'Frontend', 'Database', 'Architecture', 'CI/CD', 'Infra', 'API', 'Testing', 'Collaboration'];
+  const categories: Category[] = ['Backend', 'Frontend', 'Database', 'Architecture', 'DevOps&Infra', 'API', 'Testing', 'Collaboration'];
 
   const getAvailableCategories = (): Category[] => {
     const categoryMap: { [key in Category]: keyof TPost } = {
@@ -49,8 +49,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
       'Frontend': 'frontend',
       'Database': 'database',
       'Architecture': 'architecture',
-      'CI/CD': 'cicd',
-      'Infra': 'infra',
+      'DevOps&Infra': 'devopsinfra',
       'API': 'api',
       'Testing': 'testing',
       'Collaboration': 'collaboration'
@@ -77,8 +76,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
       'Frontend': 'frontend',
       'Database': 'database',
       'Architecture': 'architecture',
-      'CI/CD': 'cicd',
-      'Infra': 'infra',
+      'DevOps&Infra': 'devopsinfra',
       'API': 'api',
       'Testing': 'testing',
       'Collaboration': 'collaboration'
@@ -111,7 +109,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
   return (
     <StyledWrapper>
       <h1 className="title">{data.title}</h1>
-      {data.type[0] !== "Paper" && (
+      {data.type && data.type[0] !== "Paper" && (
         <nav>
           <div className="links">
             {data.github && (
@@ -209,7 +207,8 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                       className="expand-button"
                       onClick={() => setIsExpanded(!isExpanded)}
                     >
-                      {isExpanded ? '접기' : '더보기'}
+                      <span className="button-label">{isExpanded ? '접기' : '더보기'}</span>
+                      <span className="button-interaction"></span>
                     </button>
                   )}
                 </div>
@@ -458,20 +457,49 @@ const StyledWrapper = styled.div`
           }
 
           .expand-button {
-            display: block;
-            width: 100%;
-            padding: 0.75rem;
-            margin-top: 0.5rem;
+            margin: 0;
             background: none;
-            border: none;
-            color: ${({ theme }) => theme.colors.gray11};
-            font-size: 0.875rem;
+            font-family: inherit;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            box-sizing: border-box;
+            line-height: normal;
             cursor: pointer;
-            transition: color 0.2s ease;
+            white-space: nowrap;
+            padding: 0 20px;
+            min-width: 64px;
+            font-size: 15px;
+            border-radius: 10px;
+            width: 100%;
+            height: 48px;
+            border: 1px solid hsla(225, 5%, 46%, 0.08);
+            background-color: ${({ theme }) => theme.colors.gray1};
+            color: rgba(46, 47, 51, 0.88);
             font-weight: 500;
+            box-shadow: none;
+            margin-top: 0.5rem;
+            transition: all 0.2s ease;
 
             &:hover {
-              color: ${({ theme }) => theme.colors.gray12};
+              border-color: hsla(225, 5%, 46%, 0.16);
+              background-color: ${({ theme }) => theme.colors.gray3};
+            }
+
+            .button-label {
+              position: relative;
+              font-size: 15px;
+              font-weight: 500;
+              color: rgba(46, 47, 51, 0.88);
+            }
+
+            .button-interaction {
+              position: absolute;
+              inset: 0;
+              border-radius: inherit;
+              transition: background-color 0.2s ease;
             }
           }
         }

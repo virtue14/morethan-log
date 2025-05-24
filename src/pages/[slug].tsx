@@ -36,7 +36,14 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const detailPosts = filterPosts(posts, filter)
   const postDetail = detailPosts.find((t: any) => t.slug === slug)
-  const recordMap = await getRecordMap(postDetail?.id!)
+
+  if (!postDetail || !postDetail.id) {
+    return {
+      notFound: true
+    }
+  }
+
+  const recordMap = await getRecordMap(postDetail.id)
 
   await queryClient.prefetchQuery(queryKey.post(`${slug}`), () => ({
     ...postDetail,
@@ -68,7 +75,7 @@ const DetailPage: NextPageWithLayout = () => {
     date: new Date(date).toISOString(),
     image: image,
     description: post.summary || "",
-    type: post.type[0],
+    type: post.type?.[0] || "Post",
     url: `${CONFIG.link}/${post.slug}`,
   }
 

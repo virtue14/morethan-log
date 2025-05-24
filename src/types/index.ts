@@ -47,9 +47,8 @@ export type TPost = {
   architecture?: string[]
   api?: string[]
   testing?: string[]
+  devopsinfra?: string[]
   collaboration?: string[]
-  cicd?: string[]
-  infra?: string[]
 }
 
 export type PostDetail = TPost & {

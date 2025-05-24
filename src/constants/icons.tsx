@@ -86,9 +86,17 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566557331/noticon/d5hqar2idkoefh6fjtpu.png"
     alt="React Logo"
   />,
-  "VueJS": <IconWrapper
+  "React Native": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1613069004/noticon/ugcstxkq5uzhbhknrr80.png"
+    alt="React Native Logo"
+  />,
+  "Expo": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1614791745/noticon/kn284gq14vuajigbjeym.png"
+    alt="Expo Logo"
+  />,
+  "Vue": <IconWrapper
     src="https://www.svgrepo.com/show/452130/vue.svg"
-    alt="ReactJS Logo"
+    alt="Vue Logo"
   />,
   "Thymeleaf": <IconWrapper
     src="https://www.thymeleaf.org/images/thymeleaf.png"
@@ -128,15 +136,57 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5.21.0/favicon-32x32.png"
     alt="Swagger Logo"
   />,
-  "OpenWeatherMap API": <IconWrapper
+  "OpenWeatherMap": <IconWrapper
     src="https://openweathermap.org/themes/openweathermap/assets/vendor/owm/img/icons/logo_32x32.png"
     alt="OpenWeatherMap Logo"
+  />,
+  "OpenAI": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1715781781/noticon/imvwynltyfkcz4dsvw8v.png"
+    alt="OpenAI Logo"
   />,
 
   // Testing
   "JUnit": <IconWrapper
     src="https://junit.org/junit5/assets/img/junit5-logo.png"
     alt="JUnit Logo"
+  />,
+
+  // DevOps & Infra
+  "Docker": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1698294991/noticon/seoaznmbzm3pcp2um3d3.png"
+    alt="Docker Logo"
+  />,
+  "GitHub Actions": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1673248072/noticon/uj1sljza7nnsj0lpilwk.png"
+    alt="GitHub Actions Logo"
+  />,
+  "Jenkins": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566778391/noticon/l0uiouhpeiq31huqu7ft.jpg"
+    alt="Jenkins Logo"
+  />,
+  "Kubernetes": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1643226154/noticon/wdbbwmhayat3eptf80zb.png"
+    alt="Kubernetes Logo"
+  />,
+  "AWS": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1593063747/noticon/v54j0lavn52l6ff61sga.png"
+    alt="AWS Logo"
+  />,
+  "Oracle Cloud": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1610429880/noticon/dpxowdqcrxyipzhsb0y1.png"
+    alt="Oracle Cloud Logo"
+  />,
+  "AWS EC2": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566914173/noticon/kos1xkevxtr81zgwvyoe.svg"
+    alt="AWS EC2 Logo"
+  />,
+  "AWS Route53": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
+    alt="AWS Route53 Logo"
+  />,
+  "AWS S3": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
+    alt="AWS S3 Logo"
   />,
 
   // Collaboration
@@ -159,38 +209,6 @@ export const ICONS: { [key: string]: ReactNode } = {
   "Miro": <IconWrapper
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
     alt="Miro Logo"
-  />,
-
-  // CI/CD
-  "Docker": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1698294991/noticon/seoaznmbzm3pcp2um3d3.png"
-    alt="Docker Logo"
-  />,
-  "GitHub Actions": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1673248072/noticon/uj1sljza7nnsj0lpilwk.png"
-    alt="GitHub Actions Logo"
-  />,
-
-  // Infra
-  "AWS": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1593063747/noticon/v54j0lavn52l6ff61sga.png"
-    alt="AWS Logo"
-  />,
-  "Oracle Cloud": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1610429880/noticon/dpxowdqcrxyipzhsb0y1.png"
-    alt="Oracle Cloud Logo"
-  />,
-  "AWS EC2": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566914173/noticon/kos1xkevxtr81zgwvyoe.svg"
-    alt="AWS EC2 Logo"
-  />,
-  "AWS Route53": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
-    alt="AWS Route53 Logo"
-  />,
-  "AWS S3": <IconWrapper
-    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1628594643/noticon/lk9utdmbhqqm6mcrsj2j.png"
-    alt="AWS S3 Logo"
   />,
 
   // Link Icons
