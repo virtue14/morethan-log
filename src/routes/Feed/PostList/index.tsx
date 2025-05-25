@@ -5,6 +5,7 @@ import { DEFAULT_CATEGORY } from "src/constants"
 import usePostsQuery from "src/hooks/usePostsQuery"
 import styled from "@emotion/styled"
 import Pagination from "../Pagination"
+import { filterPosts } from "./filterPosts"
 
 type Props = {
   q: string
@@ -25,35 +26,15 @@ const PostList: React.FC<Props> = ({ q, view }) => {
 
   useEffect(() => {
     setFilteredPosts(() => {
-      let newFilteredPosts = data
-      // keyword
-      newFilteredPosts = newFilteredPosts.filter((post) => {
-        const tagContent = post.tags ? post.tags.join(" ") : ""
-        const searchContent = post.title + post.summary + tagContent
-        return searchContent.toLowerCase().includes(q.toLowerCase())
+      return filterPosts({
+        posts: data,
+        q,
+        tag: currentTag,
+        category: currentCategory,
+        order: currentOrder
       })
-
-      // tag
-      if (currentTag) {
-        newFilteredPosts = newFilteredPosts.filter(
-          (post) => post && post.tags && post.tags.includes(currentTag)
-        )
-      }
-
-      // category
-      if (currentCategory !== DEFAULT_CATEGORY) {
-        newFilteredPosts = newFilteredPosts.filter(
-          (post) => post && post.category && post.category.includes(currentCategory)
-        )
-      }
-      // order
-      if (currentOrder !== "desc") {
-        newFilteredPosts = newFilteredPosts.reverse()
-      }
-
-      return newFilteredPosts
     })
-  }, [q, currentTag, currentCategory, currentOrder, setFilteredPosts])
+  }, [q, currentTag, currentCategory, currentOrder, data])
 
   const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
   const startIndex = (currentPage - 1) * POSTS_PER_PAGE

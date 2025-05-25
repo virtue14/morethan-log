@@ -28,15 +28,31 @@ export function filterPosts({
       )
     })
     .sort((a, b) => {
-      const getValidDate = (dateStr?: string) => {
-        if (!dateStr || dateStr.trim() === "") return Number.MAX_SAFE_INTEGER
-        const timestamp = new Date(dateStr).getTime()
-        return isNaN(timestamp) ? Number.MAX_SAFE_INTEGER : timestamp
+      const getStartDate = (post: TPost) => {
+        const startDate = post.date?.start_date;
+        if (!startDate || startDate.trim() === "") return null;
+        
+        const timestamp = new Date(startDate).getTime();
+        return isNaN(timestamp) ? null : timestamp;
       }
 
-      const dateA = getValidDate(a.date?.end_date) || getValidDate(a.date?.start_date)
-      const dateB = getValidDate(b.date?.end_date) || getValidDate(b.date?.start_date)
+      const dateA = getStartDate(a);
+      const dateB = getStartDate(b);
 
-      return order === "desc" ? dateB - dateA : dateA - dateB
+      // 한쪽만 날짜가 있는 경우, 날짜 있는 것을 앞으로
+      if (dateA !== null && dateB === null) return -1;
+      if (dateA === null && dateB !== null) return 1;
+
+      // 둘 다 날짜가 있는 경우
+      if (dateA !== null && dateB !== null) {
+        // desc: 최신순(큰 날짜가 앞으로), asc: 오래된순(작은 날짜가 앞으로)
+        return order === "desc" ? dateB - dateA : dateA - dateB;
+      }
+
+      // 둘 다 날짜가 없는 경우
+      // desc: 제목 내림차순(Z->A), asc: 제목 오름차순(A->Z)
+      return order === "desc" 
+        ? b.title.localeCompare(a.title)  // 내림차순
+        : a.title.localeCompare(b.title); // 오름차순
     })
 }
