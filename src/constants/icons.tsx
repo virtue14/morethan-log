@@ -139,7 +139,7 @@ export const ICONS: { [key: string]: ReactNode } = {
     alt="MSA Logo"
   />,
   "Hexagonal Architecture": <IconWrapper
-    src="https://tech.osci.kr/wp-content/uploads/2023/03/hexagonal-architecture.png"
+    src="https://miro.medium.com/v2/resize:fit:1400/format:webp/1*NfFzI7Z-E3ypn8ahESbDzw.png"
     alt="Hexagonal Architecture Logo"
   />,
   "Layered Architecture": <IconWrapper
