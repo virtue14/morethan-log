@@ -102,6 +102,14 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1592435734/noticon/ovcserf615eo3sbcbv8b.png"
     alt="Thymeleaf Logo"
   />,
+  "Flutter": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1566919318/noticon/pjnpsszivn2jjfgspqj7.png"
+    alt="Flutter Logo"
+  />,
+  "Next.js": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1738065463/noticon/gepermuh39ujljzf72e6.png"
+    alt="Next.js Logo"
+  />,
 
   // Database
   "MariaDB": <IconWrapper
@@ -130,6 +138,14 @@ export const ICONS: { [key: string]: ReactNode } = {
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1693318359/noticon/lvlbunsvuzy8hptgelpn.png"
     alt="MSA Logo"
   />,
+  "Hexagonal Architecture": <IconWrapper
+    src="https://tech.osci.kr/wp-content/uploads/2023/03/hexagonal-architecture.png"
+    alt="Hexagonal Architecture Logo"
+  />,
+  "Layered Architecture": <IconWrapper
+    src="https://cdn3.iconfinder.com/data/icons/ecommerce-and-marketing/48/layers_map_layer-1024.png"
+    alt="Layered Architecture Logo"
+  />,
 
   // API
   "Swagger": <IconWrapper
@@ -143,6 +159,10 @@ export const ICONS: { [key: string]: ReactNode } = {
   "OpenAI": <IconWrapper
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1715781781/noticon/imvwynltyfkcz4dsvw8v.png"
     alt="OpenAI Logo"
+  />,
+  "Kakao Map": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1673268920/noticon/atml6eff8fcwstxdubyn.png"
+    alt="Kakao Map Logo"
   />,
 
   // Testing
@@ -241,6 +261,10 @@ export const ICONS: { [key: string]: ReactNode } = {
   "Discord": <IconWrapper
     src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1640152045/noticon/albswwsjaaxvxbyhmwig.png"
     alt="Discord Logo"
+  />,
+  "JIRA": <IconWrapper
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1676966453/noticon/gdq4xi8msuhfqfiwypam.png"
+    alt="JIRA Logo"
   />,
 
   // Link Icons
