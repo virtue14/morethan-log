@@ -25,7 +25,7 @@ export const ICONS: { [key: string]: ReactNode } = {
     alt="Kotlin Logo"
   />,
   "Java": <IconWrapper
-    src="https://www.svgrepo.com/show/452234/java.svg"
+    src="https://noticon-static.tammolo.com/dgggcrkxq/image/upload/v1629972500/noticon/htwpjnfc0hlr1teypbjo.png"
     alt="Java Logo"
   />,
   "Spring Boot": <IconWrapper
