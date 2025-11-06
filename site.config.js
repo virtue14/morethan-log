@@ -6,9 +6,9 @@ const CONFIG = {
     role: "Backend Developer",
     bio: "항상 꾸준함과 집요함으로",
     email: "gdpark.dev@gmail.com",
-    linkedin: "",
     github: "virtue14",
-    instagram: "",
+    linkedin: "virtue-gdpark",
+    instagram: "virtue_gd",
   },
   projects: [
     {
@@ -24,10 +24,10 @@ const CONFIG = {
   },
 
   // CONFIG configration (required)
-  link: "https://virtue-world.info",
+  link: "https://virtue-project.info",
   since: 2025, // If leave this empty, current year will be used.
   lang: "ko-KR", // ['en-US', 'zh-CN', 'zh-HK', 'zh-TW', 'ja-JP', 'es-ES', 'ko-KR']
-  ogImageGenerateURL: "https://virtue-world.info/my.png", // The link to generate OG image, don't end with a slash
+  ogImageGenerateURL: "https://virtue-project.info/my.png", // The link to generate OG image, don't end with a slash
 
   // notion configuration (required)
   notionConfig: {
