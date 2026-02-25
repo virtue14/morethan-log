@@ -1,7 +1,6 @@
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
-import { ExtendedRecordMap } from "notion-types"
 import useScheme from "src/hooks/useScheme"
 
 // core styles shared by all of react-notion-x (required)
@@ -51,7 +50,7 @@ const mapPageUrl = (id: string) => {
 }
 
 type Props = {
-  recordMap: ExtendedRecordMap
+  recordMap: Parameters<typeof import("react-notion-x")["NotionRenderer"]>[0]["recordMap"]
 }
 
 const NotionRenderer: FC<Props> = ({ recordMap }) => {

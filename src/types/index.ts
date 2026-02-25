@@ -1,7 +1,10 @@
 import { NextPage } from "next"
 import { AppProps } from "next/app"
-import { ExtendedRecordMap } from "notion-types"
 import { ReactElement, ReactNode } from "react"
+
+type NotionRendererRecordMap = Parameters<
+  typeof import("react-notion-x")["NotionRenderer"]
+>[0]["recordMap"]
 
 // TODO: refactor types
 export type NextPageWithLayout<PageProps = {}> = NextPage<PageProps> & {
@@ -52,7 +55,7 @@ export type TPost = {
 }
 
 export type PostDetail = TPost & {
-  recordMap: ExtendedRecordMap
+  recordMap: NotionRendererRecordMap
 }
 
 export type TPosts = TPost[]
