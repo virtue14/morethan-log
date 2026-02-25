@@ -34,11 +34,13 @@ export const getPosts = async () => {
 
   const response = await retryWithBackoff(() => api.getPage(id))
   id = idToUuid(id)
-  const collection = Object.values(response.collection)[0]?.value
+  const collectionValue = Object.values(response.collection)[0]?.value as any
+  const collection = collectionValue?.value ?? collectionValue
   const block = response.block
   const schema = collection?.schema
 
-  const rawMetadata = block[id].value
+  const blockValue = (block[id].value as any)?.value ?? block[id].value
+  const rawMetadata = blockValue
 
   // Check Type
   if (
