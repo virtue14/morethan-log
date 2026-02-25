@@ -1,7 +1,7 @@
 const CONFIG = {
   // profile setting (required)
   profile: {
-    name: "악덕",
+    name: "Noah",
     image: "/my.png", // If you want to create your own notion avatar, check out https://notion-avatar.vercel.app
     role: "Backend Developer",
     bio: "항상 꾸준함과 집요함으로",
@@ -20,7 +20,7 @@ const CONFIG = {
   blog: {
     title: "Project.zip",
     description: "나만의 프로젝트 모음집입니다.",
-    scheme: "light", // 'light' | 'dark' | 'system'
+    scheme: "system", // 'light' | 'dark' | 'system'
   },
 
   // CONFIG configration (required)
