@@ -61,11 +61,13 @@ export const getPosts = async () => {
 
       if (properties) {
         // Add fullwidth, createdtime to properties
+        const pageBlockEntry = block[id].value as any
+        const pageBlockValue = pageBlockEntry?.value ?? pageBlockEntry
         properties.createdTime = new Date(
-          block[id].value?.created_time
+          pageBlockValue?.created_time
         ).toString()
         properties.fullWidth =
-          (block[id].value?.format as any)?.page_full_width ?? false
+          (pageBlockValue?.format as any)?.page_full_width ?? false
 
         data.push(properties)
       }
