@@ -44,6 +44,12 @@ export const getStaticProps: GetStaticProps = async (context) => {
   }
 
   const recordMap = await getRecordMap(postDetail.id)
+  if (!recordMap) {
+    return {
+      notFound: true,
+      revalidate: CONFIG.revalidateTime,
+    }
+  }
 
   await queryClient.prefetchQuery(queryKey.post(`${slug}`), () => ({
     ...postDetail,

@@ -30,6 +30,24 @@ Next.js static blog using Notion as a Content Management System (CMS). Supports 
 
 ## Getting Started
 
+### Local Development
+
+This project uses **Yarn (v1)** as the single package manager.
+
+```bash
+yarn install
+yarn dev
+```
+
+### Validation
+
+```bash
+yarn validate
+# or run individually
+yarn typecheck
+yarn build
+```
+
 1. Star this repo.
 2. [Fork](https://github.com/morethanmin/morethan-log/fork) the repo to your Profile.
 3. Duplicate [this Notion template](https://morethanmin.notion.site/12c38b5f459d4eb9a759f92fba6cea36?v=2e7962408e3842b2a1a801bf3546edda), and Share to Web.

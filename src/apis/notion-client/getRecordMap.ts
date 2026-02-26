@@ -1,23 +1,20 @@
 import { NotionAPI } from "notion-client"
-
-const MAX_RETRIES = 3
-
-const retryWithBackoff = async <T>(
-  fn: () => Promise<T>,
-  retries = MAX_RETRIES
-): Promise<T> => {
-  try {
-    return await fn()
-  } catch (error) {
-    if (retries === 0) {
-      throw error
-    }
-    await new Promise(resolve => setTimeout(resolve, Math.pow(2, MAX_RETRIES - retries) * 1000))
-    return retryWithBackoff(fn, retries - 1)
-  }
-}
+import { retryWithBackoff } from "src/libs/utils/retryWithBackoff"
 
 export const getRecordMap = async (pageId: string) => {
   const api = new NotionAPI()
-  return retryWithBackoff(() => api.getPage(pageId))
+  try {
+    return await retryWithBackoff(() => api.getPage(pageId))
+  } catch (error) {
+    const errorCode =
+      typeof (error as { code?: unknown })?.code === "string"
+        ? (error as { code: string }).code
+        : undefined
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    console.warn("getRecordMap warning: fallback to null recordMap", {
+      code: errorCode,
+      message: errorMessage,
+    })
+    return null
+  }
 }
