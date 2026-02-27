@@ -5,8 +5,8 @@ import { TPost } from "../../../types"
 import Image from "next/image"
 import Category from "src/components/Category"
 import styled from "@emotion/styled"
-import { useEffect, useRef, useState } from "react"
-import { ICONS } from "src/constants/icons"
+import { useMemo } from "react"
+import { TechIcon, hasIcon } from "src/constants/icons"
 
 type Props = {
   data: TPost
@@ -15,43 +15,39 @@ type Props = {
 
 const PostCard: React.FC<Props> = ({ data, view }) => {
   const category = (data.category && data.category?.[0]) || undefined
-  const [displayTags, setDisplayTags] = useState<string[]>([])
-  const techStackRef = useRef<HTMLDivElement>(null)
 
   const getFormattedDate = () => {
-    const startDate = data?.date?.start_date || null;
-    const endDate = data?.date?.end_date || null;
+    const startDate = data?.date?.start_date || null
+    const endDate = data?.date?.end_date || null
 
     if (startDate && endDate) {
-      return `${formatDate(startDate, CONFIG.lang)} ~ ${formatDate(endDate, CONFIG.lang)}`;
+      return `${formatDate(startDate, CONFIG.lang)} ~ ${formatDate(
+        endDate,
+        CONFIG.lang
+      )}`
     } else if (startDate) {
-      return `${formatDate(startDate, CONFIG.lang)} ~ Present`;
+      return `${formatDate(startDate, CONFIG.lang)} ~ Present`
     } else {
-      return null;
+      return null
     }
-  };
+  }
 
-  useEffect(() => {
-    const updateDisplayTags = () => {
-      if (!techStackRef.current || !data.tags) return;
-
-      const containerWidth = techStackRef.current.offsetWidth;
-      const iconWidth = 44; // 아이콘 크기(36) + 간격(8)
-      const maxVisibleTags = Math.floor(containerWidth / iconWidth);
-      
-      setDisplayTags(data.tags.slice(0, Math.max(1, maxVisibleTags)));
-    };
-
-    updateDisplayTags();
-    window.addEventListener('resize', updateDisplayTags);
-    
-    return () => {
-      window.removeEventListener('resize', updateDisplayTags);
-    };
-  }, [data.tags, techStackRef]);
-
-  const formattedDate = getFormattedDate();
-  const remainingTagsCount = data.tags ? data.tags.length - displayTags.length : 0;
+  const maxVisibleTagCount = view === "grid" ? 6 : 10
+  const normalizedTags = useMemo(
+    () =>
+      (data.tags ?? [])
+        .map((tag) => tag?.trim())
+        .filter((tag): tag is string => Boolean(tag))
+        .filter((tag) => hasIcon(tag)),
+    [data.tags]
+  )
+  const displayTags = useMemo(
+    () => normalizedTags.slice(0, maxVisibleTagCount),
+    [normalizedTags, maxVisibleTagCount]
+  )
+  const formattedDate = getFormattedDate()
+  const remainingTagsCount = normalizedTags.length - displayTags.length
+  const hasTags = normalizedTags.length > 0
 
   return (
     <StyledWrapper href={`/${data.slug}`} view={view}>
@@ -67,11 +63,16 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
               src={data.thumbnail}
               fill
               alt={data.title}
+              sizes="(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 520px"
               css={{ objectFit: "cover" }}
             />
           </div>
         )}
-        <div data-thumb={view === 'grid' && !!data.thumbnail} data-category={!!category} className="content">
+        <div
+          data-thumb={view === "grid" && !!data.thumbnail}
+          data-category={!!category}
+          className="content"
+        >
           <header className="top">
             <h2>{data.title}</h2>
           </header>
@@ -83,23 +84,20 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
           <div className="summary">
             <p>{data.summary}</p>
           </div>
-          <div className="tech-stack" ref={techStackRef}>
-            <div className="icons-container">
-              {displayTags.map((tag, index) => {
-                const icon = ICONS[tag];
-                return icon ? (
+          {hasTags && (
+            <div className="tech-stack">
+              <div className="icons-container">
+                {displayTags.map((tag, index) => (
                   <div key={index} className="icon-wrapper" title={tag}>
-                    {icon}
+                    <TechIcon name={tag} />
                   </div>
-                ) : null;
-              })}
-            </div>
-            {remainingTagsCount > 0 && (
-              <div className="more-count">
-                +{remainingTagsCount}개
+                ))}
               </div>
-            )}
-          </div>
+              {remainingTagsCount > 0 && (
+                <div className="more-count">+{remainingTagsCount}개</div>
+              )}
+            </div>
+          )}
         </div>
       </article>
     </StyledWrapper>
@@ -141,16 +139,6 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
       left: ${({ view }) => view === 'grid' ? '1rem' : 'auto'};
       right: ${({ view }) => view === 'grid' ? 'auto' : '1rem'};
       z-index: 10;
-      
-      > div {
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        background-color: ${({ theme }) =>
-          theme.scheme === "light" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.5)"};
-        backdrop-filter: blur(4px);
-      }
     }
 
     > .thumbnail {

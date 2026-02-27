@@ -1,5 +1,5 @@
 import styled from "@emotion/styled"
-import React from "react"
+import React, { useEffect, useRef, useState } from "react"
 import {
   AiFillLinkedin,
   AiOutlineGithub,
@@ -9,7 +9,55 @@ import {
 import { CONFIG } from "site.config"
 import { Emoji } from "src/components/Emoji"
 
+type CopyState = "idle" | "success" | "error"
+
 const ContactCard: React.FC = () => {
+  const [copyState, setCopyState] = useState<CopyState>("idle")
+  const copiedTimerRef = useRef<number | null>(null)
+
+  const handleCopyEmail = async () => {
+    const email = CONFIG.profile.email
+    if (!email) {
+      return
+    }
+
+    let copied = false
+    try {
+      await navigator.clipboard.writeText(email)
+      copied = true
+    } catch (error) {
+      try {
+        const textarea = document.createElement("textarea")
+        textarea.value = email
+        textarea.style.position = "fixed"
+        textarea.style.opacity = "0"
+        document.body.appendChild(textarea)
+        textarea.focus()
+        textarea.select()
+        copied = document.execCommand("copy")
+        document.body.removeChild(textarea)
+      } catch (fallbackError) {
+        copied = false
+      }
+    }
+
+    setCopyState(copied ? "success" : "error")
+    if (copiedTimerRef.current) {
+      window.clearTimeout(copiedTimerRef.current)
+    }
+    copiedTimerRef.current = window.setTimeout(() => {
+      setCopyState("idle")
+    }, 1800)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimerRef.current) {
+        window.clearTimeout(copiedTimerRef.current)
+      }
+    }
+  }, [])
+
   return (
     <>
       <StyledTitle>
@@ -37,15 +85,26 @@ const ContactCard: React.FC = () => {
           </a>
         )}
         {CONFIG.profile.email && (
-          <a
-            href={`mailto:${CONFIG.profile.email}`}
-            rel="noreferrer"
-            target="_blank"
+          <button
+            type="button"
+            onClick={handleCopyEmail}
+            title={CONFIG.profile.email}
             css={{ overflow: "hidden" }}
           >
             <AiOutlineMail className="icon" />
-            <div className="name">email</div>
-          </a>
+            <div className="name-row">
+              <div className="name">email</div>
+              {copyState === "success" && (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="copy-state"
+                >
+                  Copied
+                </div>
+              )}
+            </div>
+          </button>
         )}
         {CONFIG.profile.linkedin && (
           <a
@@ -75,7 +134,8 @@ const StyledWrapper = styled.div`
   border-radius: 1rem;
   background-color: ${({ theme }) =>
     theme.scheme === "light" ? "white" : theme.colors.gray4};
-  a {
+  a,
+  button {
     display: flex;
     padding: 0.75rem;
     gap: 0.75rem;
@@ -83,11 +143,16 @@ const StyledWrapper = styled.div`
     border-radius: 1rem;
     color: ${({ theme }) => theme.colors.gray11};
     cursor: pointer;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
 
     :hover {
       color: ${({ theme }) => theme.colors.gray12};
       background-color: ${({ theme }) => theme.colors.gray5};
     }
+
     .icon {
       font-size: 1.5rem;
       line-height: 2rem;
@@ -95,6 +160,26 @@ const StyledWrapper = styled.div`
     .name {
       font-size: 0.875rem;
       line-height: 1.25rem;
+    }
+
+    .name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 0.5rem;
+      min-width: 0;
+    }
+
+    .copy-state {
+      font-size: 0.75rem;
+      line-height: 1rem;
+      padding: 0;
+      border-radius: 9999px;
+      font-weight: 600;
+      flex-shrink: 0;
+      color: ${({ theme }) =>
+        theme.scheme === "light" ? "#166534" : "#dcfce7"};
     }
   }
 `

@@ -1,13 +1,20 @@
 import React from "react"
+import dynamic from "next/dynamic"
 import styled from "@emotion/styled"
-import NotionRenderer from "../components/NotionRenderer"
-import usePostQuery from "src/hooks/usePostQuery"
-type Props = {}
+import { PostDetail as PostDetailType } from "src/types"
 
-const PageDetail: React.FC<Props> = () => {
-  const data = usePostQuery()
+const NotionRenderer = dynamic(
+  () => import("../components/NotionRenderer"),
+  {
+    ssr: false,
+  }
+)
 
-  if (!data) return null
+type Props = {
+  data: PostDetailType
+}
+
+const PageDetail: React.FC<Props> = ({ data }) => {
   return (
     <StyledWrapper>
       <NotionRenderer recordMap={data.recordMap} />

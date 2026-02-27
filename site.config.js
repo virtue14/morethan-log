@@ -2,7 +2,7 @@ const CONFIG = {
   // profile setting (required)
   profile: {
     name: "Noah",
-    image: "/my.png", // If you want to create your own notion avatar, check out https://notion-avatar.vercel.app
+    image: "/noah.png", // If you want to create your own notion avatar, check out https://notion-avatar.vercel.app
     role: "Backend Developer",
     bio: "항상 꾸준함과 집요함으로",
     email: "gdpark.dev@gmail.com",
@@ -20,7 +20,7 @@ const CONFIG = {
   blog: {
     title: "Project.zip",
     description: "나만의 프로젝트 모음집입니다.",
-    scheme: "system", // 'light' | 'dark' | 'system'
+    scheme: "light", // 'light' | 'dark' | 'system'
   },
 
   // CONFIG configration (required)
@@ -69,7 +69,7 @@ const CONFIG = {
     },
   },
   isProd: process.env.VERCEL_ENV === "production", // distinguish between development and production environment (ref: https://vercel.com/docs/environment-variables#system-environment-variables)
-  revalidateTime: 10, // revalidate time for [slug], index
+  revalidateTime: 21600, // 6시간, revalidate time for [slug], index
 }
 
 module.exports = { CONFIG }

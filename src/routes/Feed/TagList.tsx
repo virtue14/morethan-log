@@ -3,12 +3,17 @@ import { useRouter } from "next/router"
 import React from "react"
 import { Emoji } from "src/components/Emoji"
 import { useTagsQuery } from "src/hooks/useTagsQuery"
+import useHydrated from "src/hooks/useHydrated"
 
 type Props = {}
 
 const TagList: React.FC<Props> = () => {
   const router = useRouter()
-  const currentTag = router.query.tag || undefined
+  const hydrated = useHydrated()
+  const currentTag =
+    hydrated && typeof router.query.tag === "string"
+      ? router.query.tag
+      : undefined
   const data = useTagsQuery()
 
   const handleClickTag = (value: any) => {

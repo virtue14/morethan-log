@@ -18,6 +18,12 @@ type GetPagePropertiesOptions = {
   userCache?: UserCache
 }
 
+const parseSelectValues = (raw: string): string[] =>
+  raw
+    .split(",")
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0)
+
 const getCachedUser = async (
   api: NotionAPI,
   userCache: UserCache,
@@ -106,16 +112,16 @@ async function getPageProperties(
           break
         }
         case "select": {
-          const selects = getTextContent(val)
-          if (selects[0]?.length) {
-            properties[propertySchema.name] = selects.split(",")
+          const selects = parseSelectValues(getTextContent(val))
+          if (selects.length > 0) {
+            properties[propertySchema.name] = selects
           }
           break
         }
         case "multi_select": {
-          const selects = getTextContent(val)
-          if (selects[0]?.length) {
-            properties[propertySchema.name] = selects.split(",")
+          const selects = parseSelectValues(getTextContent(val))
+          if (selects.length > 0) {
+            properties[propertySchema.name] = selects
           }
           break
         }

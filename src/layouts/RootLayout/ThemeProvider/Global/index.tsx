@@ -1,6 +1,5 @@
 import { Global as _Global, css, useTheme } from "@emotion/react"
 
-import { ThemeProvider as _ThemeProvider } from "@emotion/react"
 import { pretendard } from "src/assets"
 
 export const Global = () => {
@@ -36,7 +35,8 @@ export const Global = () => {
         }
 
         a {
-          all: unset;
+          color: inherit;
+          text-decoration: none;
           cursor: pointer;
         }
 
@@ -44,27 +44,43 @@ export const Global = () => {
           padding: 0;
         }
 
-        // init button
         button {
-          all: unset;
+          border: none;
+          background-color: transparent;
+          color: inherit;
+          font: inherit;
+          padding: 0;
           cursor: pointer;
         }
 
-        // init input
         input {
-          all: unset;
           box-sizing: border-box;
+          color: inherit;
+          font: inherit;
         }
 
-        // init textarea
+        input::placeholder {
+          color: ${theme.colors.gray10};
+        }
+
         textarea {
           border: none;
           background-color: transparent;
           font-family: inherit;
+          box-sizing: border-box;
           padding: 0;
           outline: none;
           resize: none;
           color: inherit;
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible {
+          outline: 2px solid ${theme.colors.gray8};
+          outline-offset: 2px;
+          border-radius: 0.5rem;
         }
 
         hr {

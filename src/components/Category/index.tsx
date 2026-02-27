@@ -2,7 +2,6 @@ import { useRouter } from "next/router"
 import React from "react"
 import { COLOR_SET } from "./constants"
 import styled from "@emotion/styled"
-import { colors } from "src/styles"
 
 export const getColorClassByName = (name: string): string => {
   try {
@@ -53,6 +52,9 @@ const StyledWrapper = styled.div`
   width: fit-content;
   font-size: 0.875rem;
   line-height: 1.25rem;
-  opacity: 0.9;
-  color: ${colors.dark.gray1};
+  font-weight: 600;
+  opacity: 1;
+  color: #111827;
+  border: 1px solid rgba(17, 24, 39, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 `

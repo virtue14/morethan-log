@@ -1,4 +1,4 @@
-import Detail from "src/routes/Detail"
+import dynamic from "next/dynamic"
 import { filterPosts } from "src/libs/utils/notion"
 import { CONFIG } from "site.config"
 import { NextPageWithLayout } from "../types"
@@ -6,11 +6,15 @@ import CustomError from "src/routes/Error"
 import { getRecordMap, getPosts } from "src/apis"
 import MetaConfig from "src/components/MetaConfig"
 import { GetStaticProps } from "next"
-import { queryClient } from "src/libs/react-query"
+import { createQueryClient } from "src/libs/react-query"
 import { queryKey } from "src/constants/queryKey"
 import { dehydrate } from "@tanstack/react-query"
 import usePostQuery from "src/hooks/usePostQuery"
 import { FilterPostsOptions } from "src/libs/utils/notion/filterPosts"
+
+const Detail = dynamic(() => import("src/routes/Detail"), {
+  ssr: false,
+})
 
 const filter: FilterPostsOptions = {
   acceptStatus: ["Public", "PublicOnDetail"],
@@ -23,16 +27,15 @@ export const getStaticPaths = async () => {
 
   return {
     paths: filteredPost.map((row) => `/${row.slug}`),
-    fallback: true,
+    fallback: "blocking",
   }
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
+  const queryClient = createQueryClient()
   const slug = context.params?.slug
 
   const posts = await getPosts()
-  const feedPosts = filterPosts(posts)
-  await queryClient.prefetchQuery(queryKey.posts(), () => feedPosts)
 
   const detailPosts = filterPosts(posts, filter)
   const postDetail = detailPosts.find((t: any) => t.slug === slug)
@@ -51,7 +54,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     }
   }
 
-  await queryClient.prefetchQuery(queryKey.post(`${slug}`), () => ({
+  await queryClient.prefetchQuery(queryKey.post(postDetail.slug), () => ({
     ...postDetail,
     recordMap,
   }))
@@ -59,13 +62,18 @@ export const getStaticProps: GetStaticProps = async (context) => {
   return {
     props: {
       dehydratedState: dehydrate(queryClient),
+      slug: postDetail.slug,
     },
     revalidate: CONFIG.revalidateTime,
   }
 }
 
-const DetailPage: NextPageWithLayout = () => {
-  const post = usePostQuery()
+type DetailPageProps = {
+  slug: string
+}
+
+const DetailPage: NextPageWithLayout<DetailPageProps> = ({ slug }) => {
+  const post = usePostQuery(slug)
 
   if (!post) return <CustomError />
 
@@ -88,7 +96,7 @@ const DetailPage: NextPageWithLayout = () => {
   return (
     <>
       <MetaConfig {...meta} />
-      <Detail />
+      <Detail data={post} />
     </>
   )
 }

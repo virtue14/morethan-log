@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import styled from "@emotion/styled"
-import { ICONS } from "src/constants/icons"
+import { TechIcon, hasIcon } from "src/constants/icons"
 
 type Props = {
   tags: string[]
@@ -8,7 +8,15 @@ type Props = {
 }
 
 const TechStack: React.FC<Props> = ({ tags, size = 'large' }) => {
-  const [visibleCount, setVisibleCount] = useState(tags.length)
+  const normalizedTags = useMemo(
+    () =>
+      tags
+        .map((tag) => tag?.trim())
+        .filter((tag): tag is string => Boolean(tag))
+        .filter((tag) => hasIcon(tag)),
+    [tags]
+  )
+  const [visibleCount, setVisibleCount] = useState(normalizedTags.length)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -20,7 +28,7 @@ const TechStack: React.FC<Props> = ({ tags, size = 'large' }) => {
       const iconWidth = size === 'small' ? 28 : 44 // icon size + gap
       const possibleCount = Math.floor(containerWidth / iconWidth)
       
-      setVisibleCount(Math.min(possibleCount, tags.length))
+      setVisibleCount(Math.min(possibleCount, normalizedTags.length))
     }
 
     calculateVisibleIcons()
@@ -29,22 +37,19 @@ const TechStack: React.FC<Props> = ({ tags, size = 'large' }) => {
     return () => {
       window.removeEventListener('resize', calculateVisibleIcons)
     }
-  }, [tags, size])
+  }, [normalizedTags.length, size])
 
-  const displayTags = tags.slice(0, visibleCount)
-  const remainingCount = tags.length - visibleCount
+  const displayTags = normalizedTags.slice(0, visibleCount)
+  const remainingCount = normalizedTags.length - visibleCount
 
   return (
     <StyledWrapper size={size}>
       <div className="tech-container" ref={containerRef}>
         {displayTags.map((tag, idx) => {
-          const icon = ICONS[tag]
-          if (!icon) return null
-          
           return (
             <div key={idx} className="icon-group">
               <div className="icon-wrapper">
-                {icon}
+                <TechIcon name={tag} />
               </div>
             </div>
           )
@@ -90,6 +95,7 @@ const StyledWrapper = styled.div<{ size: 'small' | 'large' }>`
     border-radius: 0.25rem;
     overflow: hidden;
     
+    svg,
     img {
       width: ${({ size }) => size === 'small' ? '20px' : '36px'};
       height: ${({ size }) => size === 'small' ? '20px' : '36px'};

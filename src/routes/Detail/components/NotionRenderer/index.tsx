@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import Link from "next/link"
+import { NotionRenderer as _NotionRenderer } from "react-notion-x"
 import useScheme from "src/hooks/useScheme"
 
 // core styles shared by all of react-notion-x (required)
@@ -12,16 +13,32 @@ import "prismjs/themes/prism-tomorrow.css"
 // used for rendering equations (optional)
 
 import "katex/dist/katex.min.css"
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import styled from "@emotion/styled"
 
-const _NotionRenderer = dynamic(
-  () => import("react-notion-x").then((m) => m.NotionRenderer),
-  { ssr: false }
-)
+const loadPrismLanguages = () =>
+  Promise.all([
+    import("prismjs/components/prism-markup-templating"),
+    import("prismjs/components/prism-markup"),
+    import("prismjs/components/prism-bash"),
+    import("prismjs/components/prism-diff"),
+    import("prismjs/components/prism-git"),
+    import("prismjs/components/prism-go"),
+    import("prismjs/components/prism-java"),
+    import("prismjs/components/prism-js-templates"),
+    import("prismjs/components/prism-jsx"),
+    import("prismjs/components/prism-json"),
+    import("prismjs/components/prism-markdown"),
+    import("prismjs/components/prism-python"),
+    import("prismjs/components/prism-rust"),
+    import("prismjs/components/prism-sql"),
+    import("prismjs/components/prism-typescript"),
+    import("prismjs/components/prism-tsx"),
+    import("prismjs/components/prism-yaml"),
+  ])
 
 const Code = dynamic(() =>
-  import("react-notion-x/build/third-party/code").then(async (m) => m.Code)
+  import("react-notion-x/build/third-party/code").then((m) => m.Code)
 )
 
 const Collection = dynamic(() =>
@@ -55,6 +72,34 @@ type Props = {
 
 const NotionRenderer: FC<Props> = ({ recordMap }) => {
   const [scheme] = useScheme()
+
+  useEffect(() => {
+    let mounted = true
+
+    const highlight = async () => {
+      try {
+        const prismModule = await import("prismjs")
+        const Prism = prismModule.default ?? prismModule
+        await loadPrismLanguages()
+        if (!mounted) {
+          return
+        }
+
+        Prism.highlightAll()
+      } catch (error) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn("Prism highlight skipped:", error)
+        }
+      }
+    }
+
+    void highlight()
+
+    return () => {
+      mounted = false
+    }
+  }, [recordMap])
+
   return (
     <StyledWrapper>
       <_NotionRenderer

@@ -7,6 +7,7 @@ import { DEFAULT_CATEGORY } from "../../../constants"
 import { useCategoriesQuery } from "../../../hooks/useCategoriesQuery"
 import useDropdown from "../../../hooks/useDropdown"
 import { MdExpandMore } from "react-icons/md"
+import useHydrated from "src/hooks/useHydrated"
 
 declare module "@emotion/react" {
   export interface Theme {
@@ -22,12 +23,25 @@ interface Props {
   onViewChange: (view: ViewType) => void
 }
 
+const parseOrder = (value: string | string[] | undefined): "asc" | "desc" => {
+  if (typeof value !== "string") {
+    return "desc"
+  }
+
+  const normalized = value.toLowerCase()
+  return normalized === "asc" || normalized === "acc" ? "asc" : "desc"
+}
+
 const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
   const router = useRouter()
-  const currentOrder = `${router.query.order || ``}` || "desc"
+  const hydrated = useHydrated()
+  const currentOrder = hydrated ? parseOrder(router.query.order) : "desc"
   const data = useCategoriesQuery()
   const [dropdownRef, opened, handleOpen] = useDropdown()
-  const currentCategory = `${router.query.category || ``}` || DEFAULT_CATEGORY
+  const currentCategory =
+    hydrated && typeof router.query.category === "string"
+      ? router.query.category
+      : DEFAULT_CATEGORY
 
   const handleOrderChange = (order: string) => {
     router.push({

@@ -3,13 +3,18 @@ import React from "react"
 import styled from "@emotion/styled"
 import { DEFAULT_CATEGORY, TEAM, PERSONAL } from "src/constants"
 import { useCategoriesQuery } from "src/hooks/useCategoriesQuery"
+import useHydrated from "src/hooks/useHydrated"
 
 type Props = {}
 
 const CategoryList: React.FC<Props> = () => {
   const router = useRouter()
+  const hydrated = useHydrated()
   const categories = useCategoriesQuery()
-  const currentCategory = `${router.query.category || ``}` || DEFAULT_CATEGORY
+  const currentCategory =
+    hydrated && typeof router.query.category === "string"
+      ? router.query.category
+      : DEFAULT_CATEGORY
 
   const handleCategoryClick = (category: string) => {
     router.push({

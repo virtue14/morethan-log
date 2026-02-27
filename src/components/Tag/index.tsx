@@ -1,19 +1,19 @@
 import React from "react"
 import styled from "@emotion/styled"
-import { ICONS } from "src/constants/icons"
+import { TechIcon, hasIcon } from "src/constants/icons"
 
 type Props = {
   children: string
 }
 
 const Tag: React.FC<Props> = ({ children }) => {
-  const icon = ICONS[children]
+  const canRenderIcon = hasIcon(children)
 
   return (
     <StyledWrapper>
-      {icon && (
+      {canRenderIcon && (
         <div className="icon-wrapper">
-          {icon}
+          <TechIcon name={children} />
         </div>
       )}
       <span className="tag-name">{children}</span>
@@ -40,6 +40,7 @@ const StyledWrapper = styled.div`
     width: 1rem;
     height: 1rem;
 
+    svg,
     img {
       width: 100%;
       height: 100%;

@@ -3,17 +3,37 @@ import { TPost } from "src/types"
 import { formatDate } from "src/libs/utils"
 import React, { useEffect, useRef, useState } from "react"
 import styled from "@emotion/styled"
-import { ICONS } from "src/constants/icons"
+import { TechIcon, hasIcon } from "src/constants/icons"
 
 type Props = {
   data: TPost
 }
 
 type Category = 'Backend' | 'Frontend' | 'Database' | 'Architecture' | 'DevOps&Infra' | 'API' | 'Testing' | 'Collaboration';
+type TechStackKey =
+  | 'backend'
+  | 'frontend'
+  | 'database'
+  | 'architecture'
+  | 'devopsinfra'
+  | 'api'
+  | 'testing'
+  | 'collaboration';
 
 type TechStacksType = {
   [key: string]: string[] | undefined;
 };
+
+const CATEGORY_KEY_MAP: Record<Category, TechStackKey> = {
+  'Backend': 'backend',
+  'Frontend': 'frontend',
+  'Database': 'database',
+  'Architecture': 'architecture',
+  'DevOps&Infra': 'devopsinfra',
+  'API': 'api',
+  'Testing': 'testing',
+  'Collaboration': 'collaboration'
+}
 
 const PostHeader: React.FC<Props> = ({ data }) => {
   const [activeTab, setActiveTab] = useState<Category>('Backend');
@@ -23,6 +43,11 @@ const PostHeader: React.FC<Props> = ({ data }) => {
   const [needsExpand, setNeedsExpand] = useState(false);
   const [itemHeight, setItemHeight] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
+
+  const normalizeItems = (items?: string[]) =>
+    (items ?? [])
+      .map((item) => item?.trim())
+      .filter((item): item is string => Boolean(item));
 
   useEffect(() => {
     if (techListRef.current && techContainerRef.current) {
@@ -53,21 +78,10 @@ const PostHeader: React.FC<Props> = ({ data }) => {
   const categories: Category[] = ['Backend', 'Frontend', 'Database', 'Architecture', 'DevOps&Infra', 'API', 'Testing', 'Collaboration'];
 
   const getAvailableCategories = (): Category[] => {
-    const categoryMap: { [key in Category]: keyof TPost } = {
-      'Backend': 'backend',
-      'Frontend': 'frontend',
-      'Database': 'database',
-      'Architecture': 'architecture',
-      'DevOps&Infra': 'devopsinfra',
-      'API': 'api',
-      'Testing': 'testing',
-      'Collaboration': 'collaboration'
-    };
-
     return categories.filter(category => {
-      const key = categoryMap[category];
+      const key = CATEGORY_KEY_MAP[category];
       const value = data[key];
-      return Array.isArray(value) && value.length > 0;
+      return Array.isArray(value) && normalizeItems(value).length > 0;
     });
   };
 
@@ -80,34 +94,24 @@ const PostHeader: React.FC<Props> = ({ data }) => {
   }, [availableCategories]);
 
   const getFilteredTechStacks = (): TechStacksType => {
-    const categoryMap: { [key in Category]: keyof TPost } = {
-      'Backend': 'backend',
-      'Frontend': 'frontend',
-      'Database': 'database',
-      'Architecture': 'architecture',
-      'DevOps&Infra': 'devopsinfra',
-      'API': 'api',
-      'Testing': 'testing',
-      'Collaboration': 'collaboration'
-    };
-
-    const key = categoryMap[activeTab];
+    const key = CATEGORY_KEY_MAP[activeTab];
+    const value = normalizeItems(data[key])
     return {
-      [key]: data[key] as string[] | undefined
+      [key]: value.length > 0 ? value : undefined
     };
   };
 
   const renderTechStacks = () => {
     const filteredStacks = getFilteredTechStacks();
     return Object.entries(filteredStacks).map(([category, items]) => {
-      if (!items) return null;
+      if (!items || items.length === 0) return null;
       return items.map((item: string, index: number) => (
         <li 
           key={`${category}-${index}`} 
           className="tech-item"
         >
           <span className="tech-icon">
-            {ICONS[item]}
+            {hasIcon(item) && <TechIcon name={item} />}
           </span>
           <span className="tech-name">{item}</span>
         </li>
@@ -127,7 +131,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="link github">
-                  {ICONS.GitHub}
+                  <TechIcon name="GitHub" width="1.25rem" height="1.25rem" />
                   <span className="url">GitHub 바로가기</span>
                 </a>
               </div>
@@ -138,7 +142,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="link swagger">
-                  {ICONS['Swagger']}
+                  <TechIcon name="Swagger" width="1.25rem" height="1.25rem" />
                   <span className="url">Swagger 바로가기</span>
                 </a>
               </div>
@@ -149,7 +153,7 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="link deploy">
-                  {ICONS.Deploy}
+                  <TechIcon name="Deploy" width="1.25rem" height="1.25rem" />
                   <span className="url">홈페이지 바로가기</span>
                 </a>
               </div>
@@ -452,6 +456,7 @@ const StyledWrapper = styled.div`
                 border: 0;
                 box-sizing: border-box;
                 
+                svg,
                 img {
                   width: 100%;
                   height: 100%;

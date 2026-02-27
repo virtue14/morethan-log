@@ -1,19 +1,25 @@
 import React from "react"
+import dynamic from "next/dynamic"
 import PostHeader from "./PostHeader"
 import Footer from "./PostFooter"
 import CommentBox from "./CommentBox"
 import Category from "src/components/Category"
 import styled from "@emotion/styled"
-import NotionRenderer from "../components/NotionRenderer"
-import usePostQuery from "src/hooks/usePostQuery"
-import CustomError from "src/routes/Error"
+import { PostDetail as PostDetailType } from "src/types"
 
-type Props = {}
+const NotionRenderer = dynamic(
+  () => import("../components/NotionRenderer"),
+  {
+    ssr: false,
+  }
+)
 
-const PostDetail: React.FC<Props> = () => {
-  const data = usePostQuery()
+type Props = {
+  data: PostDetailType
+}
 
-  if (!data || !data.type) return <CustomError />
+const PostDetail: React.FC<Props> = ({ data }) => {
+  if (!data?.type) return null
 
   const category = (data.category && data.category?.[0]) || undefined
   const isPost = data.type[0] === "Post"

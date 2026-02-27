@@ -11,29 +11,36 @@ const Pagination: React.FC<Props> = ({ currentPage, totalPages, onPageChange }) 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
 
   return (
-    <StyledWrapper>
+    <StyledWrapper role="navigation" aria-label="포스트 페이지 이동">
       <button
+        type="button"
         className="nav-btn"
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
+        aria-label="이전 페이지"
       >
         이전
       </button>
       <div className="pages">
         {pages.map((page) => (
           <button
+            type="button"
             key={page}
             className={`page-btn ${page === currentPage ? 'active' : ''}`}
             onClick={() => onPageChange(page)}
+            aria-current={page === currentPage ? "page" : undefined}
+            aria-label={`${page}페이지`}
           >
             {page}
           </button>
         ))}
       </div>
       <button
+        type="button"
         className="nav-btn"
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
+        aria-label="다음 페이지"
       >
         다음
       </button>

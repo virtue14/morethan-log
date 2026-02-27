@@ -1,3 +1,4 @@
+import { useRouter } from "next/router"
 import { useState } from "react"
 
 import SearchInput from "./SearchInput"
@@ -11,17 +12,57 @@ import ContactCard from "./ContactCard"
 import PostList from "./PostList"
 import PinnedPosts from "./PostList/PinnedPosts"
 import CategoryList from "./CategoryList"
+import useHydrated from "src/hooks/useHydrated"
 
 const HEADER_HEIGHT = 73
 
 type Props = {}
 
+const getViewFromQuery = (value: string | string[] | undefined): 'list' | 'grid' => {
+  if (typeof value !== "string") {
+    return "grid"
+  }
+
+  if (value === "list") {
+    return "list"
+  }
+
+  // Keep backward compatibility when "gallery" is used in links/query.
+  if (value === "gallery") {
+    return "grid"
+  }
+
+  return "grid"
+}
+
 const Feed: React.FC<Props> = () => {
+  const router = useRouter()
+  const hydrated = useHydrated()
+  const isQueryReady = hydrated && router.isReady
   const [q, setQ] = useState("")
-  const [view, setView] = useState<'list' | 'grid'>('grid')
+  const view = isQueryReady ? getViewFromQuery(router.query.view) : "grid"
 
   const handleViewChange = (newView: 'list' | 'grid') => {
-    setView(newView)
+    if (!isQueryReady) {
+      return
+    }
+
+    const nextQuery = { ...router.query }
+
+    if (newView === "grid") {
+      delete nextQuery.view
+    } else {
+      nextQuery.view = newView
+    }
+
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: nextQuery,
+      },
+      undefined,
+      { shallow: true, scroll: false }
+    )
   }
 
   return (

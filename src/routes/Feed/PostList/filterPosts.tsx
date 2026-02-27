@@ -16,6 +16,13 @@ export function filterPosts({
                               category = DEFAULT_CATEGORY,
                               order = "desc",
                             }: FilterPostsParams): TPost[] {
+  const compareTitle = (left: string, right: string) => {
+    const a = left.normalize("NFKD")
+    const b = right.normalize("NFKD")
+    if (a === b) return 0
+    return a > b ? 1 : -1
+  }
+
   return posts
     .filter((post) => {
       const tagContent = post.tags ? post.tags.join(" ") : ""
@@ -52,7 +59,7 @@ export function filterPosts({
       // 둘 다 날짜가 없는 경우
       // desc: 제목 내림차순(Z->A), asc: 제목 오름차순(A->Z)
       return order === "desc" 
-        ? b.title.localeCompare(a.title)  // 내림차순
-        : a.title.localeCompare(b.title); // 오름차순
+        ? compareTitle(b.title, a.title)  // 내림차순
+        : compareTitle(a.title, b.title); // 오름차순
     })
 }
