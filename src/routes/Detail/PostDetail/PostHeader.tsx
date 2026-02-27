@@ -335,23 +335,31 @@ const StyledWrapper = styled.div`
           margin-bottom: 2rem;
           border-bottom: 1px solid ${({ theme }) => theme.colors.gray6};
           overflow-x: auto;
+          overflow-y: hidden;
           -webkit-overflow-scrolling: touch;
+          overscroll-behavior-x: contain;
+          overscroll-behavior-y: none;
+          touch-action: pan-x;
+          scrollbar-width: none;
           
           &::-webkit-scrollbar {
             display: none;
           }
 
           .tabs {
-            display: flex;
-            gap: 2rem;
+            display: inline-flex;
+            align-items: stretch;
+            gap: 1.5rem;
             white-space: nowrap;
             padding: 0;
             margin: 0;
             list-style: none;
+            min-width: max-content;
             
             .tab-item {
               position: relative;
-              margin-bottom: -1px;
+              margin-bottom: 0;
+              border-bottom: 2px solid transparent;
 
               button {
                 padding: 0.75rem 0;
@@ -364,6 +372,11 @@ const StyledWrapper = styled.div`
                 outline: none;
                 font-weight: 400;
                 white-space: nowrap;
+                line-height: 1.25rem;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+                user-select: none;
 
                 &:hover {
                   color: ${({ theme }) => theme.colors.gray12};
@@ -371,20 +384,11 @@ const StyledWrapper = styled.div`
               }
 
               &.active {
+                border-bottom-color: ${({ theme }) => theme.colors.gray12};
+
                 button {
                   color: ${({ theme }) => theme.colors.gray12};
                   font-weight: 500;
-                }
-
-                &::after {
-                  content: '';
-                  position: absolute;
-                  bottom: 0;
-                  left: 0;
-                  right: 0;
-                  height: 2px;
-                  background-color: ${({ theme }) => theme.colors.gray12};
-                  border-radius: 2px 2px 0 0;
                 }
               }
             }
