@@ -1,9 +1,8 @@
 import { CONFIG } from "site.config"
-import { ReactCusdis } from "react-cusdis"
-import { useCallback, useEffect, useState } from "react"
+import Script from "next/script"
+import { useEffect } from "react"
 import styled from "@emotion/styled"
 import useScheme from "src/hooks/useScheme"
-import { useRouter } from "next/router"
 
 type Props = {
   id: string
@@ -12,44 +11,50 @@ type Props = {
 }
 
 const Cusdis: React.FC<Props> = ({ id, slug, title }) => {
-  const [value, setValue] = useState(0)
   const [scheme] = useScheme()
 
-  const onDocumentElementChange = useCallback(() => {
-    setValue((value) => value + 1)
-  }, [])
-
   useEffect(() => {
-    const changesObserver = new MutationObserver(
-      (mutations: MutationRecord[]) => {
-        mutations.forEach((mutation: MutationRecord) => {
-          onDocumentElementChange()
-        })
+    if (typeof window !== "undefined") {
+      type CusdisWindow = Window & {
+        CUSDIS?: {
+          initial?: () => void
+        }
       }
-    )
-
-    changesObserver.observe(document.documentElement, {
-      attributeFilter: ["class"],
-    })
-
-    return () => {
-      changesObserver.disconnect()
+      const cusdis = (window as CusdisWindow).CUSDIS
+      if (cusdis?.initial) {
+        cusdis.initial()
+      }
     }
-  }, [onDocumentElementChange])
+  }, [id, slug, title, scheme])
 
   return (
     <>
       <StyledWrapper id="comments">
-        <ReactCusdis
-          key={value}
-          attrs={{
-            host: CONFIG.cusdis.config.host,
-            appId: CONFIG.cusdis.config.appid,
-            pageId: id,
-            pageTitle: title,
-            pageUrl: `${CONFIG.link}/${slug}`,
-            theme: scheme,
+        <Script
+          src={`${CONFIG.cusdis.config.host}/js/cusdis.es.js`}
+          strategy="lazyOnload"
+          onLoad={() => {
+            if (typeof window !== "undefined") {
+              type CusdisWindow = Window & {
+                CUSDIS?: {
+                  initial?: () => void
+                }
+              }
+              const cusdis = (window as CusdisWindow).CUSDIS
+              if (cusdis?.initial) {
+                cusdis.initial()
+              }
+            }
           }}
+        />
+        <div
+          id="cusdis_thread"
+          data-host={CONFIG.cusdis.config.host}
+          data-app-id={CONFIG.cusdis.config.appid}
+          data-page-id={id}
+          data-page-title={title}
+          data-page-url={`${CONFIG.link}/${slug}`}
+          data-theme={scheme}
         />
       </StyledWrapper>
     </>

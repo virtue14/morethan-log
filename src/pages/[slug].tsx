@@ -3,7 +3,7 @@ import { filterPosts } from "src/libs/utils/notion"
 import { CONFIG } from "site.config"
 import { NextPageWithLayout } from "../types"
 import CustomError from "src/routes/Error"
-import { getRecordMap, getPosts } from "src/apis"
+import { getPosts } from "src/apis"
 import MetaConfig from "src/components/MetaConfig"
 import { GetStaticProps } from "next"
 import { createQueryClient } from "src/libs/react-query"
@@ -46,18 +46,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     }
   }
 
-  const recordMap = await getRecordMap(postDetail.id)
-  if (!recordMap) {
-    return {
-      notFound: true,
-      revalidate: CONFIG.revalidateTime,
-    }
-  }
-
-  await queryClient.prefetchQuery(queryKey.post(postDetail.slug), () => ({
-    ...postDetail,
-    recordMap,
-  }))
+  await queryClient.prefetchQuery(queryKey.post(postDetail.slug), () => postDetail)
 
   return {
     props: {

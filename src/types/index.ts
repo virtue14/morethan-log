@@ -2,7 +2,7 @@ import { NextPage } from "next"
 import { AppProps } from "next/app"
 import { ReactElement, ReactNode } from "react"
 
-type NotionRendererRecordMap = Parameters<
+export type NotionRendererRecordMap = Parameters<
   typeof import("react-notion-x")["NotionRenderer"]
 >[0]["recordMap"]
 
@@ -55,7 +55,7 @@ export type TPost = {
 }
 
 export type PostDetail = TPost & {
-  recordMap: NotionRendererRecordMap
+  recordMap?: NotionRendererRecordMap
 }
 
 export type TPosts = TPost[]

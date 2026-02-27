@@ -6,6 +6,7 @@ import CommentBox from "./CommentBox"
 import Category from "src/components/Category"
 import styled from "@emotion/styled"
 import { PostDetail as PostDetailType } from "src/types"
+import useRecordMapQuery from "src/hooks/useRecordMapQuery"
 
 const NotionRenderer = dynamic(
   () => import("../components/NotionRenderer"),
@@ -23,6 +24,7 @@ const PostDetail: React.FC<Props> = ({ data }) => {
 
   const category = (data.category && data.category?.[0]) || undefined
   const isPost = data.type[0] === "Post"
+  const recordMap = useRecordMapQuery(data.id, data.recordMap)
 
   return (
     <StyledWrapper>
@@ -36,7 +38,11 @@ const PostDetail: React.FC<Props> = ({ data }) => {
         )}
         {isPost && <PostHeader data={data} />}
         <div>
-          <NotionRenderer recordMap={data.recordMap} />
+          {recordMap ? (
+            <NotionRenderer recordMap={recordMap} />
+          ) : (
+            <LoadingMessage>본문을 불러오는 중입니다...</LoadingMessage>
+          )}
         </div>
         {isPost && (
           <>
@@ -67,4 +73,9 @@ const StyledWrapper = styled.div`
     margin: 0 auto;
     max-width: 42rem;
   }
+`
+
+const LoadingMessage = styled.p`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.gray10};
 `
