@@ -1,8 +1,9 @@
-import React from "react"
+import React, { useRef } from "react"
 import dynamic from "next/dynamic"
 import styled from "@emotion/styled"
 import { PostDetail as PostDetailType } from "src/types"
 import useRecordMapQuery from "src/hooks/useRecordMapQuery"
+import ReadingAssist from "../components/ReadingAssist"
 
 const NotionRenderer = dynamic(
   () => import("../components/NotionRenderer"),
@@ -16,6 +17,7 @@ type Props = {
 }
 
 const PageDetail: React.FC<Props> = ({ data }) => {
+  const notionContentRef = useRef<HTMLDivElement>(null)
   const { recordMap, isError, isLoading, retry } = useRecordMapQuery(
     data.id,
     data.recordMap
@@ -23,20 +25,23 @@ const PageDetail: React.FC<Props> = ({ data }) => {
 
   return (
     <StyledWrapper>
-      {recordMap ? (
-        <NotionRenderer recordMap={recordMap} />
-      ) : isError ? (
-        <ErrorPanel role="alert">
-          <p>페이지를 불러오지 못했습니다.</p>
-          <button type="button" onClick={() => void retry()}>
-            다시 시도
-          </button>
-        </ErrorPanel>
-      ) : (
-        <LoadingMessage>
-          {isLoading ? "페이지를 불러오는 중입니다..." : "페이지 데이터를 준비하는 중입니다..."}
-        </LoadingMessage>
-      )}
+      <div ref={notionContentRef}>
+        {recordMap ? (
+          <NotionRenderer recordMap={recordMap} />
+        ) : isError ? (
+          <ErrorPanel role="alert">
+            <p>페이지를 불러오지 못했습니다.</p>
+            <button type="button" onClick={() => void retry()}>
+              다시 시도
+            </button>
+          </ErrorPanel>
+        ) : (
+          <LoadingMessage>
+            {isLoading ? "페이지를 불러오는 중입니다..." : "페이지 데이터를 준비하는 중입니다..."}
+          </LoadingMessage>
+        )}
+      </div>
+      <ReadingAssist contentRef={notionContentRef} enabled={Boolean(recordMap)} />
     </StyledWrapper>
   )
 }

@@ -77,8 +77,12 @@ export const Global = () => {
         a:focus-visible,
         button:focus-visible,
         input:focus-visible,
-        textarea:focus-visible {
-          outline: 2px solid ${theme.colors.gray8};
+        textarea:focus-visible,
+        select:focus-visible,
+        [tabindex]:not([tabindex="-1"]):focus-visible {
+          outline: 3px solid ${theme.scheme === "dark"
+            ? theme.colors.blue8
+            : theme.colors.blue7};
           outline-offset: 2px;
           border-radius: 0.5rem;
         }

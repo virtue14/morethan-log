@@ -1,5 +1,5 @@
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import SearchInput from "./SearchInput"
 import FeedHeader from "./FeedHeader/index"
@@ -25,6 +25,20 @@ const getViewFromStorage = (value: string | null): "list" | "grid" => {
   return value === "list" ? "list" : "grid"
 }
 
+const isEditableElement = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLElement)) {
+    return false
+  }
+
+  const tagName = target.tagName
+  return (
+    target.isContentEditable ||
+    tagName === "INPUT" ||
+    tagName === "TEXTAREA" ||
+    tagName === "SELECT"
+  )
+}
+
 const Feed: React.FC<Props> = () => {
   const router = useRouter()
   const hydrated = useHydrated()
@@ -32,6 +46,7 @@ const Feed: React.FC<Props> = () => {
   const debouncedQuery = useDebouncedValue(q, 250)
   const [filteredCount, setFilteredCount] = useState(0)
   const [view, setView] = useState<"list" | "grid">("grid")
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!hydrated) {
@@ -64,6 +79,32 @@ const Feed: React.FC<Props> = () => {
     )
   }, [hydrated, router.isReady, router.pathname, router.query])
 
+  useEffect(() => {
+    if (!hydrated) {
+      return
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "/" || event.metaKey || event.ctrlKey || event.altKey) {
+        return
+      }
+
+      if (
+        isEditableElement(event.target) ||
+        isEditableElement(document.activeElement)
+      ) {
+        return
+      }
+
+      event.preventDefault()
+      searchInputRef.current?.focus()
+      searchInputRef.current?.select()
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [hydrated])
+
   const handleViewChange = (newView: 'list' | 'grid') => {
     setView(newView)
     if (hydrated) {
@@ -85,6 +126,7 @@ const Feed: React.FC<Props> = () => {
         <MobileProfileCard />
         <PinnedPosts q={debouncedQuery} view={view} />
         <SearchInput
+          ref={searchInputRef}
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onClear={() => setQ("")}

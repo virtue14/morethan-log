@@ -129,15 +129,21 @@ const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
       <div className="right">
         <div className="view-toggle">
           <button
+            type="button"
             className={view === 'grid' ? 'active' : ''}
             title="카드 뷰"
+            aria-label="카드 보기"
+            aria-pressed={view === "grid"}
             onClick={() => onViewChange('grid')}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-layout-grid"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
           </button>
           <button
+            type="button"
             className={view === 'list' ? 'active' : ''}
             title="리스트 뷰"
+            aria-label="리스트 보기"
+            aria-pressed={view === "list"}
             onClick={() => onViewChange('list')}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-align-left"><path d="M15 12H3"></path><path d="M17 18H3"></path><path d="M21 6H3"></path></svg>

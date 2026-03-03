@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useRef } from "react"
 import dynamic from "next/dynamic"
 import PostHeader from "./PostHeader"
 import Footer from "./PostFooter"
@@ -7,6 +7,7 @@ import Category from "src/components/Category"
 import styled from "@emotion/styled"
 import { PostDetail as PostDetailType } from "src/types"
 import useRecordMapQuery from "src/hooks/useRecordMapQuery"
+import ReadingAssist from "../components/ReadingAssist"
 
 const NotionRenderer = dynamic(
   () => import("../components/NotionRenderer"),
@@ -22,6 +23,7 @@ type Props = {
 const PostDetail: React.FC<Props> = ({ data }) => {
   if (!data?.type) return null
 
+  const notionContentRef = useRef<HTMLDivElement>(null)
   const category = (data.category && data.category?.[0]) || undefined
   const isPost = data.type[0] === "Post"
   const { recordMap, isError, isLoading, retry } = useRecordMapQuery(
@@ -40,7 +42,7 @@ const PostDetail: React.FC<Props> = ({ data }) => {
           </div>
         )}
         {isPost && <PostHeader data={data} />}
-        <div>
+        <div ref={notionContentRef}>
           {recordMap ? (
             <NotionRenderer recordMap={recordMap} />
           ) : isError ? (
@@ -56,6 +58,7 @@ const PostDetail: React.FC<Props> = ({ data }) => {
             </LoadingMessage>
           )}
         </div>
+        <ReadingAssist contentRef={notionContentRef} enabled={Boolean(recordMap)} />
         {isPost && (
           <>
             <Footer />

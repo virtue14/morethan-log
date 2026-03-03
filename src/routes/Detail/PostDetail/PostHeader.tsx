@@ -192,16 +192,23 @@ const PostHeader: React.FC<Props> = ({ data }) => {
               <div className="tech-stacks">
                 <h3 className="tech-title">사용 기술</h3>
                 <div className="tabs-container">
-                  <ul className="tabs">
+                  <ul className="tabs" role="tablist" aria-label="사용 기술 카테고리">
                     {availableCategories.map((category) => (
                       <li 
                         key={category} 
                         className={`tab-item ${activeTab === category ? 'active' : ''}`}
                       >
-                        <button onClick={() => {
-                          setActiveTab(category);
-                          setIsExpanded(false);
-                        }}>
+                        <button
+                          type="button"
+                          role="tab"
+                          id={`tech-tab-${CATEGORY_KEY_MAP[category]}`}
+                          aria-selected={activeTab === category}
+                          aria-controls={`tech-panel-${CATEGORY_KEY_MAP[category]}`}
+                          onClick={() => {
+                            setActiveTab(category);
+                            setIsExpanded(false);
+                          }}
+                        >
                           {category}
                         </button>
                       </li>
@@ -215,12 +222,18 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                   <ul 
                     ref={techListRef} 
                     className={`tech-list ${isExpanded ? 'expanded' : ''}`}
+                    role="tabpanel"
+                    id={`tech-panel-${CATEGORY_KEY_MAP[activeTab]}`}
+                    aria-labelledby={`tech-tab-${CATEGORY_KEY_MAP[activeTab]}`}
                   >
                     {renderTechStacks()}
                   </ul>
                   {needsExpand && (
                     <button 
                       className="expand-button"
+                      type="button"
+                      aria-expanded={isExpanded}
+                      aria-controls={`tech-panel-${CATEGORY_KEY_MAP[activeTab]}`}
                       onClick={() => setIsExpanded(!isExpanded)}
                     >
                       <span className="button-label">{isExpanded ? '접기' : '더보기'}</span>
@@ -372,7 +385,6 @@ const StyledWrapper = styled.div`
                 background: none;
                 cursor: pointer;
                 transition: all 0.2s ease;
-                outline: none;
                 font-weight: 400;
                 white-space: nowrap;
                 line-height: 1.25rem;
@@ -401,7 +413,7 @@ const StyledWrapper = styled.div`
         .tabs-hint {
           display: none;
           margin: -1.25rem 0 0.75rem;
-          color: ${({ theme }) => theme.colors.gray10};
+          color: ${({ theme }) => theme.colors.gray11};
           font-size: 0.75rem;
           line-height: 1rem;
 
@@ -517,24 +529,25 @@ const StyledWrapper = styled.div`
             border-radius: 10px;
             width: 100%;
             height: 48px;
-            border: 1px solid hsla(225, 5%, 46%, 0.08);
-            background-color: ${({ theme }) => theme.colors.gray1};
-            color: rgba(46, 47, 51, 0.88);
+            border: 1px solid ${({ theme }) => theme.colors.gray6};
+            background-color: ${({ theme }) => theme.colors.gray3};
+            color: ${({ theme }) => theme.colors.gray11};
             font-weight: 500;
             box-shadow: none;
             margin-top: 0.5rem;
             transition: all 0.2s ease;
 
             &:hover {
-              border-color: hsla(225, 5%, 46%, 0.16);
-              background-color: ${({ theme }) => theme.colors.gray3};
+              border-color: ${({ theme }) => theme.colors.gray7};
+              background-color: ${({ theme }) => theme.colors.gray4};
+              color: ${({ theme }) => theme.colors.gray12};
             }
 
             .button-label {
               position: relative;
               font-size: 15px;
               font-weight: 500;
-              color: rgba(46, 47, 51, 0.88);
+              color: inherit;
             }
 
             .button-interaction {
