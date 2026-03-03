@@ -5,8 +5,10 @@ import { TPost } from "../../../types"
 import Image from "next/image"
 import Category from "src/components/Category"
 import styled from "@emotion/styled"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { TechIcon, hasIcon } from "src/constants/icons"
+import { useQueryClient } from "@tanstack/react-query"
+import { prefetchRecordMap } from "src/hooks/useRecordMapQuery"
 
 type Props = {
   data: TPost
@@ -15,6 +17,8 @@ type Props = {
 
 const PostCard: React.FC<Props> = ({ data, view }) => {
   const [isThumbnailLoaded, setIsThumbnailLoaded] = useState(false)
+  const prefetchedRef = useRef(false)
+  const queryClient = useQueryClient()
   const category = (data.category && data.category?.[0]) || undefined
 
   const getFormattedDate = () => {
@@ -55,8 +59,23 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
     setIsThumbnailLoaded(false)
   }, [data.thumbnail, data.slug, view])
 
+  const handlePrefetchRecordMap = () => {
+    if (prefetchedRef.current || !data.id) {
+      return
+    }
+
+    prefetchedRef.current = true
+    void prefetchRecordMap(queryClient, data.id)
+  }
+
   return (
-    <StyledWrapper href={`/${data.slug}`} view={view}>
+    <StyledWrapper
+      href={`/${data.slug}`}
+      view={view}
+      onMouseEnter={handlePrefetchRecordMap}
+      onFocus={handlePrefetchRecordMap}
+      onTouchStart={handlePrefetchRecordMap}
+    >
       <article>
         {category && (
           <div className="category">

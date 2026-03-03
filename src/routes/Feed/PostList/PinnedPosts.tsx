@@ -1,9 +1,11 @@
 import PostCard from "src/routes/Feed/PostList/PostCard"
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo } from "react"
 import usePostsQuery from "src/hooks/usePostsQuery"
 import styled from "@emotion/styled"
 import { filterPosts } from "./filterPosts"
 import { DEFAULT_CATEGORY } from "src/constants"
+import { useQueryClient } from "@tanstack/react-query"
+import { prefetchRecordMap } from "src/hooks/useRecordMapQuery"
 
 type Props = {
   q: string
@@ -12,6 +14,7 @@ type Props = {
 
 const PinnedPosts: React.FC<Props> = ({ q, view }) => {
   const data = usePostsQuery()
+  const queryClient = useQueryClient()
 
   const filteredPosts = useMemo(() => {
     const baseFiltered = filterPosts({
@@ -22,6 +25,12 @@ const PinnedPosts: React.FC<Props> = ({ q, view }) => {
     })
     return baseFiltered.filter((post) => post.tags?.includes("Pinned"))
   }, [data, q])
+
+  useEffect(() => {
+    const target = filteredPosts[0]?.id
+    if (!target) return
+    void prefetchRecordMap(queryClient, target)
+  }, [filteredPosts, queryClient])
 
   if (filteredPosts.length === 0) return null
 

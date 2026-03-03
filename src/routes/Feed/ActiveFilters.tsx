@@ -20,13 +20,6 @@ const parseOrder = (value: string | string[] | undefined): "asc" | "desc" => {
     : "desc"
 }
 
-const parseView = (value: string | string[] | undefined): "grid" | "list" => {
-  if (typeof value !== "string") {
-    return "grid"
-  }
-  return value === "list" ? "list" : "grid"
-}
-
 const ActiveFilters: React.FC<Props> = ({ q, onClearSearch }) => {
   const router = useRouter()
   const hydrated = useHydrated()
@@ -38,7 +31,6 @@ const ActiveFilters: React.FC<Props> = ({ q, onClearSearch }) => {
   const currentTag =
     isReady && typeof router.query.tag === "string" ? router.query.tag : undefined
   const currentOrder = isReady ? parseOrder(router.query.order) : "desc"
-  const currentView = isReady ? parseView(router.query.view) : "grid"
 
   const replaceQuery = (nextQuery: ParsedUrlQueryInput) => {
     void router.replace(
@@ -89,14 +81,6 @@ const ActiveFilters: React.FC<Props> = ({ q, onClearSearch }) => {
       onRemove: () => removeQueryKey("order"),
     })
   }
-  if (currentView === "list") {
-    chips.push({
-      key: "view",
-      label: "보기: 리스트",
-      onRemove: () => removeQueryKey("view"),
-    })
-  }
-
   if (chips.length === 0) {
     return null
   }

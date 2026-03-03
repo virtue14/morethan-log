@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { QueryClient, useQuery } from "@tanstack/react-query"
 import { queryKey } from "src/constants/queryKey"
 import { NotionRendererRecordMap } from "src/types"
 
@@ -6,7 +6,9 @@ type RecordMapResponse = {
   recordMap: NotionRendererRecordMap
 }
 
-const fetchRecordMap = async (pageId: string): Promise<NotionRendererRecordMap> => {
+export const fetchRecordMap = async (
+  pageId: string
+): Promise<NotionRendererRecordMap> => {
   const response = await fetch(`/api/record-map?pageId=${encodeURIComponent(pageId)}`)
   if (!response.ok) {
     throw new Error(`Failed to load recordMap: ${response.status}`)
@@ -16,13 +18,25 @@ const fetchRecordMap = async (pageId: string): Promise<NotionRendererRecordMap> 
   return payload.recordMap
 }
 
+export const getRecordMapQueryOptions = (pageId: string) => ({
+  queryKey: queryKey.recordMap(pageId),
+  queryFn: () => fetchRecordMap(pageId),
+  staleTime: 1000 * 60 * 30,
+  cacheTime: 1000 * 60 * 60,
+  retry: 1,
+})
+
+export const prefetchRecordMap = (queryClient: QueryClient, pageId: string) => {
+  if (!pageId) {
+    return Promise.resolve(undefined)
+  }
+  return queryClient.prefetchQuery(getRecordMapQueryOptions(pageId))
+}
+
 const useRecordMapQuery = (pageId?: string, initialRecordMap?: NotionRendererRecordMap) => {
   const query = useQuery<NotionRendererRecordMap>({
-    queryKey: queryKey.recordMap(pageId ?? ""),
-    queryFn: () => fetchRecordMap(pageId ?? ""),
+    ...getRecordMapQueryOptions(pageId ?? ""),
     enabled: Boolean(pageId) && !initialRecordMap,
-    staleTime: 1000 * 60 * 10,
-    retry: 1,
   })
 
   return {

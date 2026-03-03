@@ -28,6 +28,9 @@ export default async function handler(
     return res.status(404).json({ message: "recordMap not found" })
   }
 
-  res.setHeader("Cache-Control", "public, s-maxage=21600, stale-while-revalidate=60")
+  res.setHeader(
+    "Cache-Control",
+    "public, max-age=600, s-maxage=21600, stale-while-revalidate=60"
+  )
   return res.status(200).json({ recordMap })
 }

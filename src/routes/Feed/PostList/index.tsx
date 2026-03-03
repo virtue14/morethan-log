@@ -7,6 +7,8 @@ import styled from "@emotion/styled"
 import Pagination from "../Pagination"
 import { filterPosts } from "./filterPosts"
 import useHydrated from "src/hooks/useHydrated"
+import { useQueryClient } from "@tanstack/react-query"
+import { prefetchRecordMap } from "src/hooks/useRecordMapQuery"
 
 type Props = {
   q: string
@@ -49,6 +51,7 @@ const PostList: React.FC<Props> = ({
   const hydrated = useHydrated()
   const isQueryReady = hydrated && router.isReady
   const data = usePostsQuery()
+  const queryClient = useQueryClient()
   const previousFilterSignatureRef = useRef<string>()
   const query = isQueryReady ? router.query : {}
 
@@ -149,6 +152,18 @@ const PostList: React.FC<Props> = ({
     const startIndex = (currentPage - 1) * POSTS_PER_PAGE
     return filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE)
   }, [filteredPosts, currentPage])
+
+  useEffect(() => {
+    // Prefetch the first cards' recordMap to reduce detail first-view latency.
+    const prefetchTargets = paginatedPosts
+      .slice(0, 2)
+      .map((post) => post.id)
+      .filter((id): id is string => Boolean(id))
+
+    prefetchTargets.forEach((pageId) => {
+      void prefetchRecordMap(queryClient, pageId)
+    })
+  }, [paginatedPosts, queryClient])
 
   const handlePageChange = (page: number) => {
     const maxPage = Math.max(totalPages, 1)
