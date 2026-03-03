@@ -5,7 +5,7 @@ import { TPost } from "../../../types"
 import Image from "next/image"
 import Category from "src/components/Category"
 import styled from "@emotion/styled"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { TechIcon, hasIcon } from "src/constants/icons"
 
 type Props = {
@@ -14,6 +14,7 @@ type Props = {
 }
 
 const PostCard: React.FC<Props> = ({ data, view }) => {
+  const [isThumbnailLoaded, setIsThumbnailLoaded] = useState(false)
   const category = (data.category && data.category?.[0]) || undefined
 
   const getFormattedDate = () => {
@@ -50,6 +51,10 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
   const remainingTagsCount = normalizedTags.length - displayTags.length
   const hasTags = normalizedTags.length > 0
 
+  useEffect(() => {
+    setIsThumbnailLoaded(false)
+  }, [data.thumbnail, data.slug, view])
+
   return (
     <StyledWrapper href={`/${data.slug}`} view={view}>
       <article>
@@ -60,11 +65,16 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
         )}
         {data.thumbnail && view === 'grid' && (
           <div className="thumbnail">
+            {!isThumbnailLoaded && <div className="thumbnail-skeleton" aria-hidden />}
             <Image
               src={data.thumbnail}
               fill
               alt={data.title}
               sizes="(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 520px"
+              placeholder="blur"
+              blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTYnIGhlaWdodD0nOScgdmlld0JveD0nMCAwIDE2IDknIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zyc+PHJlY3Qgd2lkdGg9JzE2JyBoZWlnaHQ9JzknIGZpbGw9JyNFNUU3RUIiLz48L3N2Zz4="
+              onLoadingComplete={() => setIsThumbnailLoaded(true)}
+              onError={() => setIsThumbnailLoaded(true)}
               css={{ objectFit: "cover" }}
             />
           </div>
@@ -147,6 +157,20 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
       background-color: ${({ theme }) => theme.colors.gray2};
       padding-bottom: 56.25%;
       flex: 0 0 auto;
+
+      .thumbnail-skeleton {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          ${({ theme }) => theme.colors.gray3} 15%,
+          ${({ theme }) => theme.colors.gray4} 50%,
+          ${({ theme }) => theme.colors.gray3} 85%
+        );
+        background-size: 200% 100%;
+        animation: thumbnailShimmer 1.2s infinite linear;
+        z-index: 1;
+      }
     }
 
     > .content {
@@ -252,6 +276,15 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
           border-radius: 0.375rem;
         }
       }
+    }
+  }
+
+  @keyframes thumbnailShimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
     }
   }
 `

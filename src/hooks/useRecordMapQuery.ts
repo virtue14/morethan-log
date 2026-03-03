@@ -17,7 +17,7 @@ const fetchRecordMap = async (pageId: string): Promise<NotionRendererRecordMap> 
 }
 
 const useRecordMapQuery = (pageId?: string, initialRecordMap?: NotionRendererRecordMap) => {
-  const { data } = useQuery<NotionRendererRecordMap>({
+  const query = useQuery<NotionRendererRecordMap>({
     queryKey: queryKey.recordMap(pageId ?? ""),
     queryFn: () => fetchRecordMap(pageId ?? ""),
     enabled: Boolean(pageId) && !initialRecordMap,
@@ -25,7 +25,12 @@ const useRecordMapQuery = (pageId?: string, initialRecordMap?: NotionRendererRec
     retry: 1,
   })
 
-  return initialRecordMap ?? data
+  return {
+    recordMap: initialRecordMap ?? query.data,
+    isLoading: !initialRecordMap && query.isLoading,
+    isError: !initialRecordMap && query.isError,
+    retry: query.refetch,
+  }
 }
 
 export default useRecordMapQuery

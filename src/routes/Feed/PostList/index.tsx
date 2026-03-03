@@ -71,6 +71,12 @@ const PostList: React.FC<Props> = ({
   }, [q, currentTag, currentCategory, currentOrder, data])
 
   const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
+  const hasActiveFilters =
+    q.trim().length > 0 ||
+    Boolean(currentTag) ||
+    currentCategory !== DEFAULT_CATEGORY ||
+    currentOrder !== "desc"
+  const showDataError = data.length === 0 && !hasActiveFilters
   const queryPage = parsePage(isQueryReady ? router.query.page : undefined)
   const currentPage = totalPages > 0 ? Math.min(queryPage, totalPages) : 1
   const filterSignature = JSON.stringify({
@@ -173,10 +179,22 @@ const PostList: React.FC<Props> = ({
     )
   }
 
+  const handleRetryLoad = () => {
+    router.reload()
+  }
+
   return (
     <StyledWrapper view={view}>
       <div className="posts-container">
-        {!filteredPosts.length && (
+        {showDataError && (
+          <div className="error-state" role="alert">
+            <p className="message">글 데이터를 불러오지 못했습니다.</p>
+            <button type="button" className="retry-btn" onClick={handleRetryLoad}>
+              다시 시도
+            </button>
+          </div>
+        )}
+        {!showDataError && !filteredPosts.length && (
           <div className="empty-state" role="status" aria-live="polite">
             <p className="message">조건에 맞는 글이 없어요</p>
             <button type="button" className="reset-btn" onClick={handleResetFilters}>
@@ -202,6 +220,7 @@ const PostList: React.FC<Props> = ({
 export default PostList
 
 const StyledWrapper = styled.div<{ view: 'list' | 'grid' }>`
+  .error-state,
   .empty-state {
     padding: 2rem 1.25rem;
     border: 1px solid ${({ theme }) => theme.colors.gray6};
@@ -216,7 +235,8 @@ const StyledWrapper = styled.div<{ view: 'list' | 'grid' }>`
       font-size: 0.9375rem;
     }
 
-    .reset-btn {
+    .reset-btn,
+    .retry-btn {
       border: none;
       border-radius: 0.625rem;
       min-height: 44px;
@@ -229,6 +249,12 @@ const StyledWrapper = styled.div<{ view: 'list' | 'grid' }>`
       &:hover {
         background: ${({ theme }) => theme.colors.gray6};
       }
+    }
+  }
+
+  .error-state {
+    .retry-btn {
+      background: ${({ theme }) => theme.colors.gray6};
     }
   }
 

@@ -14,6 +14,7 @@ import PinnedPosts from "./PostList/PinnedPosts"
 import CategoryList from "./CategoryList"
 import useHydrated from "src/hooks/useHydrated"
 import useDebouncedValue from "src/hooks/useDebouncedValue"
+import ActiveFilters from "./ActiveFilters"
 
 const HEADER_HEIGHT = 73
 
@@ -87,6 +88,7 @@ const Feed: React.FC<Props> = () => {
           onClear={() => setQ("")}
           resultCount={filteredCount}
         />
+        <ActiveFilters q={q} onClearSearch={() => setQ("")} />
         <div className="tags">
           <CategoryList />
         </div>
