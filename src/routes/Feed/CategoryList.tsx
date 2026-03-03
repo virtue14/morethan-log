@@ -17,38 +17,55 @@ const CategoryList: React.FC<Props> = () => {
       : DEFAULT_CATEGORY
 
   const handleCategoryClick = (category: string) => {
-    router.push({
-      query: {
-        ...router.query,
-        category,
+    if (!hydrated || !router.isReady) {
+      return
+    }
+
+    const nextQuery = { ...router.query }
+    if (category === DEFAULT_CATEGORY) {
+      delete nextQuery.category
+    } else {
+      nextQuery.category = category
+    }
+    delete nextQuery.page
+
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: nextQuery,
       },
-    })
+      undefined,
+      { shallow: true, scroll: false }
+    )
   }
 
   return (
     <StyledWrapper>
       <div className="list">
-        <a
+        <button
+          type="button"
           data-active={currentCategory === DEFAULT_CATEGORY}
           onClick={() => handleCategoryClick(DEFAULT_CATEGORY)}
         >
           {DEFAULT_CATEGORY}
           <span className="count">({Object.values(categories).reduce((acc, curr) => acc + curr, 0)})</span>
-        </a>
-        <a
+        </button>
+        <button
+          type="button"
           data-active={currentCategory === TEAM}
           onClick={() => handleCategoryClick(TEAM)}
         >
           {TEAM}
           <span className="count">({categories[TEAM] || 0})</span>
-        </a>
-        <a
+        </button>
+        <button
+          type="button"
           data-active={currentCategory === PERSONAL}
           onClick={() => handleCategoryClick(PERSONAL)}
         >
           {PERSONAL}
           <span className="count">({categories[PERSONAL] || 0})</span>
-        </a>
+        </button>
       </div>
     </StyledWrapper>
   )
@@ -66,7 +83,7 @@ const StyledWrapper = styled.div`
     flex-direction: column;
     gap: 0.5rem;
 
-    a {
+    button {
       display: flex;
       padding: 0.5rem;
       gap: 0.5rem;
@@ -74,6 +91,10 @@ const StyledWrapper = styled.div`
       border-radius: 0.75rem;
       cursor: pointer;
       color: ${({ theme }) => theme.colors.gray11};
+      border: 0;
+      background: transparent;
+      width: 100%;
+      text-align: left;
       
       &[data-active="true"] {
         color: ${({ theme }) => theme.colors.gray12};

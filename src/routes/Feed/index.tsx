@@ -13,6 +13,7 @@ import PostList from "./PostList"
 import PinnedPosts from "./PostList/PinnedPosts"
 import CategoryList from "./CategoryList"
 import useHydrated from "src/hooks/useHydrated"
+import useDebouncedValue from "src/hooks/useDebouncedValue"
 
 const HEADER_HEIGHT = 73
 
@@ -40,6 +41,8 @@ const Feed: React.FC<Props> = () => {
   const hydrated = useHydrated()
   const isQueryReady = hydrated && router.isReady
   const [q, setQ] = useState("")
+  const debouncedQuery = useDebouncedValue(q, 250)
+  const [filteredCount, setFilteredCount] = useState(0)
   const view = isQueryReady ? getViewFromQuery(router.query.view) : "grid"
 
   const handleViewChange = (newView: 'list' | 'grid') => {
@@ -77,8 +80,13 @@ const Feed: React.FC<Props> = () => {
       </div>
       <div className="mid">
         <MobileProfileCard />
-        <PinnedPosts q={q} view={view} />
-        <SearchInput value={q} onChange={(e) => setQ(e.target.value)} />
+        <PinnedPosts q={debouncedQuery} view={view} />
+        <SearchInput
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onClear={() => setQ("")}
+          resultCount={filteredCount}
+        />
         <div className="tags">
           <CategoryList />
         </div>
@@ -86,7 +94,11 @@ const Feed: React.FC<Props> = () => {
           <FeedHeader view={view} onViewChange={handleViewChange} />
         </div>
         <hr className="divider" />
-        <PostList q={q} view={view} />
+        <PostList
+          q={debouncedQuery}
+          view={view}
+          onFilteredCountChange={setFilteredCount}
+        />
         <div className="footer">
           <Footer />
         </div>

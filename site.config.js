@@ -1,3 +1,28 @@
+/**
+ * @param {string | undefined} url
+ */
+const ensureAbsoluteUrl = (url) => {
+  if (!url) return ""
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url
+  }
+  return `https://${url}`
+}
+
+/**
+ * @param {string} url
+ */
+const removeTrailingSlash = (url) => url.replace(/\/+$/, "")
+
+const SITE_URL = removeTrailingSlash(
+  ensureAbsoluteUrl(
+    process.env.NEXT_PUBLIC_SITE_URL ||
+      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
+      process.env.VERCEL_URL ||
+      "http://localhost:3000"
+  )
+)
+
 const CONFIG = {
   // profile setting (required)
   profile: {
@@ -24,10 +49,10 @@ const CONFIG = {
   },
 
   // CONFIG configration (required)
-  link: "https://virtue-project.info",
+  link: SITE_URL,
   since: 2025, // If leave this empty, current year will be used.
   lang: "ko-KR", // ['en-US', 'zh-CN', 'zh-HK', 'zh-TW', 'ja-JP', 'es-ES', 'ko-KR']
-  ogImageGenerateURL: "https://virtue-project.info/my.png", // The link to generate OG image, don't end with a slash
+  ogImageGenerateURL: `${SITE_URL}/noah.png`,
 
   // notion configuration (required)
   notionConfig: {

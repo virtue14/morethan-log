@@ -8,6 +8,7 @@ import { useCategoriesQuery } from "../../../hooks/useCategoriesQuery"
 import useDropdown from "../../../hooks/useDropdown"
 import { MdExpandMore } from "react-icons/md"
 import useHydrated from "src/hooks/useHydrated"
+import type { ParsedUrlQueryInput } from "querystring"
 
 declare module "@emotion/react" {
   export interface Theme {
@@ -43,41 +44,73 @@ const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
       ? router.query.category
       : DEFAULT_CATEGORY
 
-  const handleOrderChange = (order: string) => {
-    router.push({
-      query: {
-        ...router.query,
-        order,
+  const replaceQuery = (nextQuery: ParsedUrlQueryInput) => {
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: nextQuery,
       },
-    })
+      undefined,
+      { shallow: true, scroll: false }
+    )
+  }
+
+  const handleOrderChange = (order: "asc" | "desc") => {
+    if (!hydrated || !router.isReady) {
+      return
+    }
+
+    const nextQuery: ParsedUrlQueryInput = { ...router.query }
+    if (order === "desc") {
+      delete nextQuery.order
+    } else {
+      nextQuery.order = order
+    }
+    delete nextQuery.page
+    replaceQuery(nextQuery)
   }
 
   const handleCategoryChange = (category: string) => {
-    router.push({
-      query: {
-        ...router.query,
-        category,
-      },
-    })
+    if (!hydrated || !router.isReady) {
+      return
+    }
+
+    const nextQuery: ParsedUrlQueryInput = { ...router.query }
+    if (category === DEFAULT_CATEGORY) {
+      delete nextQuery.category
+    } else {
+      nextQuery.category = category
+    }
+    delete nextQuery.page
+    replaceQuery(nextQuery)
   }
 
   return (
     <StyledWrapper>
       <div className="left">
-        <div className="category-select">
-          <div ref={dropdownRef} className="wrapper" onClick={handleOpen}>
+        <div className="category-select" ref={dropdownRef}>
+          <button
+            type="button"
+            className="wrapper"
+            onClick={handleOpen}
+            aria-haspopup="listbox"
+            aria-expanded={opened}
+            aria-label="카테고리 선택 열기"
+          >
             {currentCategory} Posts <MdExpandMore />
-          </div>
+          </button>
           {opened && (
-            <div className="content">
+            <div className="content" role="listbox" aria-label="카테고리 목록">
               {Object.keys(data).map((key, idx) => (
-                <div
+                <button
+                  type="button"
                   className="item"
                   key={idx}
                   onClick={() => handleCategoryChange(key)}
+                  aria-selected={currentCategory === key}
                 >
                   {`${key} (${data[key]})`}
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -101,18 +134,22 @@ const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
           </button>
         </div>
         <div className="order-toggle">
-          <a
+          <button
+            type="button"
             data-active={currentOrder === "desc"}
             onClick={() => handleOrderChange("desc")}
+            aria-pressed={currentOrder === "desc"}
           >
             Desc
-          </a>
-          <a
+          </button>
+          <button
+            type="button"
             data-active={currentOrder === "asc"}
             onClick={() => handleOrderChange("asc")}
+            aria-pressed={currentOrder === "asc"}
           >
             Asc
-          </a>
+          </button>
         </div>
       </div>
     </StyledWrapper>
@@ -138,6 +175,9 @@ const StyledWrapper = styled.div`
         font-weight: 600;
         cursor: pointer;
         color: ${({ theme }) => theme.colors.gray12};
+        border: none;
+        background: transparent;
+        padding: 0;
 
         svg {
           margin-top: 1px;
@@ -161,6 +201,11 @@ const StyledWrapper = styled.div`
           line-height: 1.25rem;
           white-space: nowrap;
           cursor: pointer;
+          border: none;
+          background: transparent;
+          color: inherit;
+          width: 100%;
+          text-align: left;
 
           &:hover {
             background-color: ${({ theme }) => theme.colors.gray4};
@@ -211,13 +256,15 @@ const StyledWrapper = styled.div`
       background-color: ${({ theme }) => theme.colors.gray4};
       border-radius: 0.5rem;
 
-      a {
+      button {
         padding: 0.375rem 0.5rem;
         cursor: pointer;
         color: ${({ theme }) => theme.colors.gray10};
         font-size: 0.875rem;
         border-radius: 0.375rem;
         transition: all 0.2s;
+        border: none;
+        background: transparent;
 
         &[data-active="true"] {
           background-color: ${({ theme }) => theme.colors.gray2};

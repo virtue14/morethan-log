@@ -11,6 +11,7 @@ import useHydrated from "src/hooks/useHydrated"
 type Props = {
   q: string
   view: 'list' | 'grid'
+  onFilteredCountChange?: (count: number) => void
 }
 
 const POSTS_PER_PAGE = 4
@@ -37,7 +38,7 @@ const parseOrder = (value: string | string[] | undefined): "asc" | "desc" => {
   return normalized === "asc" || normalized === "acc" ? "asc" : "desc"
 }
 
-const PostList: React.FC<Props> = ({ q, view }) => {
+const PostList: React.FC<Props> = ({ q, view, onFilteredCountChange }) => {
   const router = useRouter()
   const hydrated = useHydrated()
   const isQueryReady = hydrated && router.isReady
@@ -100,6 +101,10 @@ const PostList: React.FC<Props> = ({ q, view }) => {
       { shallow: true, scroll: false }
     )
   }
+
+  useEffect(() => {
+    onFilteredCountChange?.(filteredPosts.length)
+  }, [filteredPosts.length, onFilteredCountChange])
 
   useEffect(() => {
     if (!isQueryReady) {
