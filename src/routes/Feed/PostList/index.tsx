@@ -1,5 +1,5 @@
 import { useRouter } from "next/router"
-import React, { useEffect, useMemo, useRef } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import PostCard from "src/routes/Feed/PostList/PostCard"
 import { DEFAULT_CATEGORY } from "src/constants"
 import usePostsQuery from "src/hooks/usePostsQuery"
@@ -52,6 +52,9 @@ const PostList: React.FC<Props> = ({
   const isQueryReady = hydrated && router.isReady
   const data = usePostsQuery()
   const queryClient = useQueryClient()
+  const [isMobileViewport, setIsMobileViewport] = useState(false)
+  const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE)
+  const infiniteTriggerRef = useRef<HTMLDivElement>(null)
   const previousFilterSignatureRef = useRef<string>()
   const query = isQueryReady ? router.query : {}
 
@@ -122,14 +125,42 @@ const PostList: React.FC<Props> = ({
   }, [filteredPosts.length, onFilteredCountChange])
 
   useEffect(() => {
+    if (!hydrated) {
+      return
+    }
+
+    const mediaQuery = window.matchMedia("(max-width: 768px)")
+    const updateViewport = () => {
+      setIsMobileViewport(mediaQuery.matches)
+    }
+
+    updateViewport()
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", updateViewport)
+      return () => {
+        mediaQuery.removeEventListener("change", updateViewport)
+      }
+    }
+
+    mediaQuery.addListener(updateViewport)
+    return () => {
+      mediaQuery.removeListener(updateViewport)
+    }
+  }, [hydrated])
+
+  useEffect(() => {
     if (!isQueryReady) {
+      return
+    }
+    if (isMobileViewport) {
       return
     }
 
     if (queryPage !== currentPage) {
       syncPageToQuery(currentPage)
     }
-  }, [isQueryReady, queryPage, currentPage])
+  }, [isQueryReady, queryPage, currentPage, isMobileViewport])
 
   useEffect(() => {
     if (!isQueryReady) {
@@ -144,18 +175,37 @@ const PostList: React.FC<Props> = ({
 
     if (previousFilterSignature !== filterSignature) {
       previousFilterSignatureRef.current = filterSignature
+      if (isMobileViewport) {
+        setVisibleCount(POSTS_PER_PAGE)
+        return
+      }
       syncPageToQuery(1)
     }
-  }, [isQueryReady, filterSignature])
+  }, [isQueryReady, filterSignature, isMobileViewport])
 
   const paginatedPosts = useMemo(() => {
     const startIndex = (currentPage - 1) * POSTS_PER_PAGE
     return filteredPosts.slice(startIndex, startIndex + POSTS_PER_PAGE)
   }, [filteredPosts, currentPage])
+  const visibleMobilePosts = useMemo(
+    () => filteredPosts.slice(0, visibleCount),
+    [filteredPosts, visibleCount]
+  )
+  const hasMoreMobilePosts =
+    isMobileViewport && visibleMobilePosts.length < filteredPosts.length
+  const postsToRender = isMobileViewport ? visibleMobilePosts : paginatedPosts
+
+  useEffect(() => {
+    if (!isMobileViewport) {
+      return
+    }
+    setVisibleCount(POSTS_PER_PAGE)
+  }, [isMobileViewport, currentCategory, currentTag, currentOrder, q])
 
   useEffect(() => {
     // Prefetch the first cards' recordMap to reduce detail first-view latency.
-    const prefetchTargets = paginatedPosts
+    const sourcePosts = isMobileViewport ? visibleMobilePosts : paginatedPosts
+    const prefetchTargets = sourcePosts
       .slice(0, 2)
       .map((post) => post.id)
       .filter((id): id is string => Boolean(id))
@@ -163,13 +213,44 @@ const PostList: React.FC<Props> = ({
     prefetchTargets.forEach((pageId) => {
       void prefetchRecordMap(queryClient, pageId)
     })
-  }, [paginatedPosts, queryClient])
+  }, [paginatedPosts, queryClient, isMobileViewport, visibleMobilePosts])
 
   const handlePageChange = (page: number) => {
     const maxPage = Math.max(totalPages, 1)
     const nextPage = Math.min(Math.max(page, 1), maxPage)
     syncPageToQuery(nextPage)
   }
+
+  const loadMoreMobilePosts = () => {
+    setVisibleCount((previous) =>
+      Math.min(previous + POSTS_PER_PAGE, filteredPosts.length)
+    )
+  }
+
+  useEffect(() => {
+    if (!isMobileViewport || !hasMoreMobilePosts || !infiniteTriggerRef.current) {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry?.isIntersecting) {
+          loadMoreMobilePosts()
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px 0px",
+        threshold: 0.1,
+      }
+    )
+
+    observer.observe(infiniteTriggerRef.current)
+    return () => {
+      observer.disconnect()
+    }
+  }, [isMobileViewport, hasMoreMobilePosts, filteredPosts.length])
 
   const handleResetFilters = () => {
     onResetSearch?.()
@@ -217,11 +298,20 @@ const PostList: React.FC<Props> = ({
             </button>
           </div>
         )}
-        {paginatedPosts.map((post) => (
+        {postsToRender.map((post) => (
           <PostCard key={post.id} data={post} view={view} />
         ))}
+        {isMobileViewport && hasMoreMobilePosts && (
+          <div
+            ref={infiniteTriggerRef}
+            className="infinite-trigger"
+            aria-live="polite"
+          >
+            콘텐츠를 불러오는 중...
+          </div>
+        )}
       </div>
-      {filteredPosts.length > POSTS_PER_PAGE && (
+      {!isMobileViewport && filteredPosts.length > POSTS_PER_PAGE && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -285,5 +375,17 @@ const StyledWrapper = styled.div<{ view: 'list' | 'grid' }>`
       grid-template-columns: 1fr;
       gap: 1rem;
     }
+  }
+
+  .infinite-trigger {
+    margin-top: 0.75rem;
+    min-height: 2.5rem;
+    border-radius: 0.75rem;
+    border: 1px dashed ${({ theme }) => theme.colors.gray6};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${({ theme }) => theme.colors.gray10};
+    font-size: 0.8125rem;
   }
 `
