@@ -3,7 +3,6 @@ import { Hydrate, QueryClientProvider } from "@tanstack/react-query"
 import { RootLayout } from "src/layouts"
 import { createQueryClient } from "src/libs/react-query"
 import { useState } from "react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 
 function App({ Component, pageProps }: AppPropsWithLayout) {
@@ -16,7 +15,6 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
         <RootLayout>{getLayout(<Component {...pageProps} />)}</RootLayout>
       </Hydrate>
       <Analytics />
-      <SpeedInsights />
     </QueryClientProvider>
   )
 }
