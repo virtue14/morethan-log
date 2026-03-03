@@ -13,7 +13,10 @@ import { prefetchRecordMap } from "src/hooks/useRecordMapQuery"
 type Props = {
   data: TPost
   view: 'list' | 'grid'
+  visibleCountSnapshot?: number
 }
+
+const FEED_SCROLL_RESTORE_KEY = "feed:scroll-restore"
 
 const normalizeThumbnailSrc = (value?: string): string | undefined => {
   if (!value) {
@@ -39,7 +42,7 @@ const normalizeThumbnailSrc = (value?: string): string | undefined => {
   return value
 }
 
-const PostCard: React.FC<Props> = ({ data, view }) => {
+const PostCard: React.FC<Props> = ({ data, view, visibleCountSnapshot }) => {
   const [isThumbnailLoaded, setIsThumbnailLoaded] = useState(false)
   const prefetchedRef = useRef(false)
   const queryClient = useQueryClient()
@@ -96,10 +99,30 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
     void prefetchRecordMap(queryClient, data.id)
   }
 
+  const handleStoreScrollPosition = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.altKey ||
+      event.shiftKey
+    ) {
+      return
+    }
+
+    const payload = {
+      path: `${window.location.pathname}${window.location.search}`,
+      y: window.scrollY,
+      visibleCount: visibleCountSnapshot,
+    }
+    window.sessionStorage.setItem(FEED_SCROLL_RESTORE_KEY, JSON.stringify(payload))
+  }
+
   return (
     <StyledWrapper
       href={`/${data.slug}`}
       view={view}
+      onClick={handleStoreScrollPosition}
       onMouseEnter={handlePrefetchRecordMap}
       onFocus={handlePrefetchRecordMap}
       onTouchStart={handlePrefetchRecordMap}

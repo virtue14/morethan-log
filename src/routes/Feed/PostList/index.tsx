@@ -20,6 +20,12 @@ type Props = {
 }
 
 const POSTS_PER_PAGE = 4
+const FEED_SCROLL_RESTORE_KEY = "feed:scroll-restore"
+type ScrollRestorePayload = {
+  path: string
+  y: number
+  visibleCount?: number
+}
 
 const parsePage = (value: string | string[] | undefined): number => {
   if (typeof value !== "string") {
@@ -50,6 +56,8 @@ const PostList: React.FC<Props> = ({
   const [isMobileViewport, setIsMobileViewport] = useState(false)
   const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE)
   const infiniteTriggerRef = useRef<HTMLDivElement>(null)
+  const restoreLoadedRef = useRef(false)
+  const [restorePayload, setRestorePayload] = useState<ScrollRestorePayload | null>(null)
   const previousFilterSignatureRef = useRef<string>()
   const query = isQueryReady ? router.query : {}
 
@@ -150,11 +158,77 @@ const PostList: React.FC<Props> = ({
     if (isMobileViewport) {
       return
     }
+    if (totalPages === 0) {
+      return
+    }
 
     if (queryPage !== currentPage) {
       syncPageToQuery(currentPage)
     }
-  }, [isQueryReady, queryPage, currentPage, isMobileViewport])
+  }, [isQueryReady, queryPage, currentPage, isMobileViewport, totalPages])
+
+  useEffect(() => {
+    if (!isQueryReady || restoreLoadedRef.current) {
+      return
+    }
+
+    const raw = window.sessionStorage.getItem(FEED_SCROLL_RESTORE_KEY)
+    restoreLoadedRef.current = true
+    if (!raw) {
+      return
+    }
+
+    window.sessionStorage.removeItem(FEED_SCROLL_RESTORE_KEY)
+
+    try {
+      const parsed = JSON.parse(raw) as ScrollRestorePayload
+      const currentPath = `${window.location.pathname}${window.location.search}`
+      if (parsed.path !== currentPath) {
+        return
+      }
+
+      const y = Number(parsed.y)
+      if (!Number.isFinite(y) || y < 0) {
+        return
+      }
+
+      setRestorePayload({
+        path: parsed.path,
+        y,
+        visibleCount:
+          typeof parsed.visibleCount === "number"
+            ? Math.max(parsed.visibleCount, POSTS_PER_PAGE)
+            : undefined,
+      })
+    } catch {
+      // ignore broken session payload
+    }
+  }, [isQueryReady])
+
+  useEffect(() => {
+    if (!restorePayload) {
+      return
+    }
+    if (filteredPosts.length === 0) {
+      return
+    }
+
+    if (isMobileViewport && typeof restorePayload.visibleCount === "number") {
+      const targetVisibleCount = Math.min(restorePayload.visibleCount, filteredPosts.length)
+      if (visibleCount < targetVisibleCount) {
+        setVisibleCount(targetVisibleCount)
+        return
+      }
+    }
+
+    // Wait until cards are painted before restoring position.
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: restorePayload.y, behavior: "auto" })
+      })
+    })
+    setRestorePayload(null)
+  }, [restorePayload, filteredPosts.length, isMobileViewport, visibleCount])
 
   useEffect(() => {
     if (!isQueryReady) {
@@ -188,13 +262,6 @@ const PostList: React.FC<Props> = ({
   const hasMoreMobilePosts =
     isMobileViewport && visibleMobilePosts.length < filteredPosts.length
   const postsToRender = isMobileViewport ? visibleMobilePosts : paginatedPosts
-
-  useEffect(() => {
-    if (!isMobileViewport) {
-      return
-    }
-    setVisibleCount(POSTS_PER_PAGE)
-  }, [isMobileViewport, currentCategory, currentTag, order, q])
 
   useEffect(() => {
     // Prefetch the first cards' recordMap to reduce detail first-view latency.
@@ -294,7 +361,12 @@ const PostList: React.FC<Props> = ({
           </div>
         )}
         {postsToRender.map((post) => (
-          <PostCard key={post.id} data={post} view={view} />
+          <PostCard
+            key={post.id}
+            data={post}
+            view={view}
+            visibleCountSnapshot={isMobileViewport ? visibleMobilePosts.length : undefined}
+          />
         ))}
         {isMobileViewport && hasMoreMobilePosts && (
           <div

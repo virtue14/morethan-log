@@ -5,20 +5,17 @@ import Header from "./Header"
 import styled from "@emotion/styled"
 import Scripts from "src/layouts/RootLayout/Scripts"
 import useGtagEffect from "./useGtagEffect"
-import useHydrated from "src/hooks/useHydrated"
 
 type Props = {
   children: ReactNode
 }
 
 const RootLayout = ({ children }: Props) => {
-  const hydrated = useHydrated()
   const [scheme] = useScheme()
-  const resolvedScheme = hydrated ? scheme : "dark"
   useGtagEffect()
 
   return (
-    <ThemeProvider scheme={resolvedScheme}>
+    <ThemeProvider scheme={scheme}>
       <Scripts />
       {/* // TODO: replace react query */}
       {/* {metaConfig.type !== "Paper" && <Header />} */}
