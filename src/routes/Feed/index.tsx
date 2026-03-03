@@ -98,6 +98,7 @@ const Feed: React.FC<Props> = () => {
           q={debouncedQuery}
           view={view}
           onFilteredCountChange={setFilteredCount}
+          onResetSearch={() => setQ("")}
         />
         <div className="footer">
           <Footer />

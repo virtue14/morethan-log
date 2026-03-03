@@ -12,6 +12,7 @@ type Props = {
   q: string
   view: 'list' | 'grid'
   onFilteredCountChange?: (count: number) => void
+  onResetSearch?: () => void
 }
 
 const POSTS_PER_PAGE = 4
@@ -38,7 +39,12 @@ const parseOrder = (value: string | string[] | undefined): "asc" | "desc" => {
   return normalized === "asc" || normalized === "acc" ? "asc" : "desc"
 }
 
-const PostList: React.FC<Props> = ({ q, view, onFilteredCountChange }) => {
+const PostList: React.FC<Props> = ({
+  q,
+  view,
+  onFilteredCountChange,
+  onResetSearch,
+}) => {
   const router = useRouter()
   const hydrated = useHydrated()
   const isQueryReady = hydrated && router.isReady
@@ -144,11 +150,39 @@ const PostList: React.FC<Props> = ({ q, view, onFilteredCountChange }) => {
     syncPageToQuery(nextPage)
   }
 
+  const handleResetFilters = () => {
+    onResetSearch?.()
+
+    if (!isQueryReady) {
+      return
+    }
+
+    const nextQuery = { ...router.query }
+    delete nextQuery.tag
+    delete nextQuery.category
+    delete nextQuery.order
+    delete nextQuery.page
+
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: nextQuery,
+      },
+      undefined,
+      { shallow: true, scroll: false }
+    )
+  }
+
   return (
     <StyledWrapper view={view}>
       <div className="posts-container">
         {!filteredPosts.length && (
-          <p className="text-gray-500 dark:text-gray-300">Nothing! 😺</p>
+          <div className="empty-state" role="status" aria-live="polite">
+            <p className="message">조건에 맞는 글이 없어요</p>
+            <button type="button" className="reset-btn" onClick={handleResetFilters}>
+              필터 초기화
+            </button>
+          </div>
         )}
         {paginatedPosts.map((post) => (
           <PostCard key={post.id} data={post} view={view} />
@@ -168,6 +202,36 @@ const PostList: React.FC<Props> = ({ q, view, onFilteredCountChange }) => {
 export default PostList
 
 const StyledWrapper = styled.div<{ view: 'list' | 'grid' }>`
+  .empty-state {
+    padding: 2rem 1.25rem;
+    border: 1px solid ${({ theme }) => theme.colors.gray6};
+    border-radius: 1rem;
+    background: ${({ theme }) => theme.colors.gray3};
+    text-align: center;
+    margin-bottom: 1.25rem;
+
+    .message {
+      margin: 0 0 0.75rem;
+      color: ${({ theme }) => theme.colors.gray11};
+      font-size: 0.9375rem;
+    }
+
+    .reset-btn {
+      border: none;
+      border-radius: 0.625rem;
+      min-height: 44px;
+      padding: 0 0.875rem;
+      background: ${({ theme }) => theme.colors.gray5};
+      color: ${({ theme }) => theme.colors.gray12};
+      font-weight: 600;
+      cursor: pointer;
+
+      &:hover {
+        background: ${({ theme }) => theme.colors.gray6};
+      }
+    }
+  }
+
   .posts-container {
     display: ${({ view }) => view === 'grid' ? 'grid' : 'block'};
     grid-template-columns: repeat(2, minmax(0, 1fr));

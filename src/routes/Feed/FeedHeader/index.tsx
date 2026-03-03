@@ -99,21 +99,31 @@ const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
           >
             {currentCategory} Posts <MdExpandMore />
           </button>
-          {opened && (
-            <div className="content" role="listbox" aria-label="카테고리 목록">
-              {Object.keys(data).map((key, idx) => (
+          <div
+            className="content"
+            data-open={opened}
+            role="listbox"
+            aria-label="카테고리 목록"
+          >
+            {Object.keys(data).map((key, idx) => (
                 <button
                   type="button"
                   className="item"
                   key={idx}
-                  onClick={() => handleCategoryChange(key)}
+                  onClick={() => {
+                    handleCategoryChange(key)
+                    handleOpen()
+                  }}
                   aria-selected={currentCategory === key}
+                  data-active={currentCategory === key}
                 >
-                  {`${key} (${data[key]})`}
-                </button>
-              ))}
-            </div>
-          )}
+                <span>{`${key} (${data[key]})`}</span>
+                <span className="item-check" aria-hidden>
+                  ✓
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       <div className="right">
@@ -140,7 +150,7 @@ const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
             onClick={() => handleOrderChange("desc")}
             aria-pressed={currentOrder === "desc"}
           >
-            Desc
+            최신순
           </button>
           <button
             type="button"
@@ -148,7 +158,7 @@ const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
             onClick={() => handleOrderChange("asc")}
             aria-pressed={currentOrder === "asc"}
           >
-            Asc
+            오래된순
           </button>
         </div>
       </div>
@@ -177,10 +187,16 @@ const StyledWrapper = styled.div`
         color: ${({ theme }) => theme.colors.gray12};
         border: none;
         background: transparent;
-        padding: 0;
+        min-height: 44px;
+        padding: 0 0.25rem;
+        border-radius: 0.5rem;
 
         svg {
           margin-top: 1px;
+        }
+
+        &:hover {
+          background-color: ${({ theme }) => theme.colors.gray4};
         }
       }
 
@@ -193,22 +209,57 @@ const StyledWrapper = styled.div`
         color: ${({ theme }) => theme.colors.gray10};
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
           0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        min-width: 12rem;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transform: translateY(-4px) scale(0.98);
+        transition: opacity 0.12s ease, transform 0.12s ease, visibility 0.12s step-end;
+
+        &[data-open="true"] {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+          transform: translateY(0) scale(1);
+          transition: opacity 0.12s ease, transform 0.12s ease;
+        }
         
         .item {
-          padding: 0.25rem 0.5rem;
+          padding: 0.5rem 0.625rem;
           border-radius: 0.75rem;
           font-size: 0.875rem;
-          line-height: 1.25rem;
+          line-height: 1.2rem;
           white-space: nowrap;
           cursor: pointer;
           border: none;
           background: transparent;
           color: inherit;
           width: 100%;
+          min-height: 44px;
           text-align: left;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.5rem;
+
+          .item-check {
+            opacity: 0;
+            color: ${({ theme }) => theme.colors.gray12};
+            font-weight: 600;
+          }
 
           &:hover {
             background-color: ${({ theme }) => theme.colors.gray4};
+          }
+
+          &[data-active="true"] {
+            color: ${({ theme }) => theme.colors.gray12};
+            background-color: ${({ theme }) => theme.colors.gray4};
+            font-weight: 600;
+
+            .item-check {
+              opacity: 1;
+            }
           }
         }
       }
@@ -228,7 +279,8 @@ const StyledWrapper = styled.div`
       border-radius: 0.5rem;
 
       button {
-        padding: 0.375rem;
+        width: 44px;
+        height: 44px;
         border: none;
         border-radius: 0.375rem;
         background: none;
@@ -257,7 +309,8 @@ const StyledWrapper = styled.div`
       border-radius: 0.5rem;
 
       button {
-        padding: 0.375rem 0.5rem;
+        min-height: 44px;
+        padding: 0.375rem 0.625rem;
         cursor: pointer;
         color: ${({ theme }) => theme.colors.gray10};
         font-size: 0.875rem;

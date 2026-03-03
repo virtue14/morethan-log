@@ -38,7 +38,7 @@ const SearchInput: React.FC<Props> = ({ resultCount, onClear, ...props }) => {
             onClick={onClear}
             aria-label="검색어 지우기"
           >
-            Clear
+            ×
           </button>
         )}
       </div>
@@ -56,7 +56,7 @@ const StyledWrapper = styled.div`
   }
   > .top {
     padding: 0.25rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -70,6 +70,8 @@ const StyledWrapper = styled.div`
     > .count {
       font-size: 0.75rem;
       color: ${({ theme }) => theme.colors.gray10};
+      font-weight: 500;
+      margin-right: 0.25rem;
     }
   }
 
@@ -78,10 +80,9 @@ const StyledWrapper = styled.div`
   }
 
   .input-wrapper > .mid {
-    padding-top: 0.625rem;
-    padding-bottom: 0.625rem;
+    height: 44px;
     padding-left: 1.25rem;
-    padding-right: 4.25rem;
+    padding-right: 3rem;
     border-radius: 1rem;
     outline-style: none;
     border: none;
@@ -106,9 +107,12 @@ const StyledWrapper = styled.div`
     border: none;
     background: transparent;
     color: ${({ theme }) => theme.colors.gray10};
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.5rem;
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0;
+    border-radius: 9999px;
     cursor: pointer;
 
     &:hover {

@@ -88,6 +88,7 @@ const StyledWrapper = styled.div`
       padding: 0.5rem;
       gap: 0.5rem;
       align-items: center;
+      min-height: 44px;
       border-radius: 0.75rem;
       cursor: pointer;
       color: ${({ theme }) => theme.colors.gray11};

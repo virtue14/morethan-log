@@ -46,6 +46,7 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
     [normalizedTags, maxVisibleTagCount]
   )
   const formattedDate = getFormattedDate()
+  const dateText = formattedDate ?? "기간 정보 없음"
   const remainingTagsCount = normalizedTags.length - displayTags.length
   const hasTags = normalizedTags.length > 0
 
@@ -76,16 +77,14 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
           <header className="top">
             <h2>{data.title}</h2>
           </header>
-          {formattedDate && (
-            <div className="date">
-              <div className="content">{formattedDate}</div>
-            </div>
-          )}
+          <div className="date" data-empty={!formattedDate}>
+            <div className="content">{dateText}</div>
+          </div>
           <div className="summary">
             <p>{data.summary}</p>
           </div>
-          {hasTags && (
-            <div className="tech-stack">
+          <div className="tech-stack" data-empty={!hasTags}>
+            {hasTags && (
               <div className="icons-container">
                 {displayTags.map((tag, index) => (
                   <div key={index} className="icon-wrapper" title={tag}>
@@ -93,11 +92,11 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
                   </div>
                 ))}
               </div>
-              {remainingTagsCount > 0 && (
-                <div className="more-count">+{remainingTagsCount}개</div>
-              )}
-            </div>
-          )}
+            )}
+            {remainingTagsCount > 0 && (
+              <div className="more-count">+{remainingTagsCount}개</div>
+            )}
+          </div>
         </div>
       </article>
     </StyledWrapper>
@@ -160,6 +159,7 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
       > .top {
         margin-bottom: 0.75rem;
         flex-shrink: 0;
+        min-height: 3.5rem;
 
         h2 {
           font-size: 1.25rem;
@@ -180,16 +180,25 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
         gap: 0.5rem;
         align-items: center;
         flex-shrink: 0;
+        min-height: 1.25rem;
         
         .content {
           font-size: 0.875rem;
           line-height: 1.25rem;
           color: ${({ theme }) => theme.colors.gray11};
         }
+
+        &[data-empty="true"] {
+          .content {
+            opacity: 0;
+            user-select: none;
+          }
+        }
       }
 
       > .summary {
         margin-bottom: 1rem;
+        min-height: 3rem;
         
         p {
           color: ${({ theme }) => theme.colors.gray11};
@@ -210,7 +219,7 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
         gap: 0.375rem;
         margin-top: auto;
         flex-shrink: 0;
-        min-height: 2rem;
+        min-height: 1.75rem;
 
         .icons-container {
           display: flex;

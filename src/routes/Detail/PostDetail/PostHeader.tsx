@@ -208,6 +208,9 @@ const PostHeader: React.FC<Props> = ({ data }) => {
                     ))}
                   </ul>
                 </div>
+                {availableCategories.length > 3 && (
+                  <p className="tabs-hint">좌우로 넘겨 다른 기술 카테고리를 확인하세요</p>
+                )}
                 <div className="tech-list-container" ref={techContainerRef}>
                   <ul 
                     ref={techListRef} 
@@ -392,6 +395,18 @@ const StyledWrapper = styled.div`
                 }
               }
             }
+          }
+        }
+
+        .tabs-hint {
+          display: none;
+          margin: -1.25rem 0 0.75rem;
+          color: ${({ theme }) => theme.colors.gray10};
+          font-size: 0.75rem;
+          line-height: 1rem;
+
+          @media (max-width: 768px) {
+            display: block;
           }
         }
 
