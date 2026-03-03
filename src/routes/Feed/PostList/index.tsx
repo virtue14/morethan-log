@@ -438,6 +438,16 @@ const StyledWrapper = styled.div<{ view: 'list' | 'grid' }>`
     width: 100%;
     max-width: 100%;
 
+    @media (max-width: 1200px) {
+      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+      gap: 1.125rem;
+    }
+
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
       gap: 1rem;

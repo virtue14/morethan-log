@@ -44,7 +44,11 @@ const normalizeThumbnailSrc = (value?: string): string | undefined => {
 
 const PostCard: React.FC<Props> = ({ data, view, visibleCountSnapshot }) => {
   const [isThumbnailLoaded, setIsThumbnailLoaded] = useState(false)
+  const [maxVisibleTagCount, setMaxVisibleTagCount] = useState(
+    view === "grid" ? 6 : 10
+  )
   const prefetchedRef = useRef(false)
+  const techStackRef = useRef<HTMLDivElement>(null)
   const queryClient = useQueryClient()
   const category = (data.category && data.category?.[0]) || undefined
   const thumbnailSrc = useMemo(
@@ -68,7 +72,6 @@ const PostCard: React.FC<Props> = ({ data, view, visibleCountSnapshot }) => {
     }
   }
 
-  const maxVisibleTagCount = view === "grid" ? 6 : 10
   const normalizedTags = useMemo(
     () =>
       (data.tags ?? [])
@@ -89,6 +92,50 @@ const PostCard: React.FC<Props> = ({ data, view, visibleCountSnapshot }) => {
   useEffect(() => {
     setIsThumbnailLoaded(false)
   }, [thumbnailSrc, data.slug, view])
+
+  useEffect(() => {
+    setMaxVisibleTagCount(view === "grid" ? 6 : 10)
+  }, [view])
+
+  useEffect(() => {
+    const element = techStackRef.current
+    if (!element || normalizedTags.length === 0) {
+      return
+    }
+
+    const ICON_WIDTH = 28
+    const ICON_GAP = 6
+    const ICON_SLOT_WIDTH = ICON_WIDTH + ICON_GAP
+    const MORE_COUNT_MIN_WIDTH = 56
+    const syncTagVisibility = () => {
+      const containerWidth = element.clientWidth
+      if (containerWidth <= 0) {
+        return
+      }
+
+      const maxWithoutMoreCount = Math.floor((containerWidth + ICON_GAP) / ICON_SLOT_WIDTH)
+      if (normalizedTags.length <= maxWithoutMoreCount) {
+        setMaxVisibleTagCount(Math.max(1, maxWithoutMoreCount))
+        return
+      }
+
+      const availableWidth = Math.max(containerWidth - MORE_COUNT_MIN_WIDTH, ICON_WIDTH)
+      const maxWithMoreCount = Math.floor((availableWidth + ICON_GAP) / ICON_SLOT_WIDTH)
+      setMaxVisibleTagCount(Math.max(1, maxWithMoreCount))
+    }
+
+    const nextFrame = window.requestAnimationFrame(syncTagVisibility)
+
+    const observer = new ResizeObserver(() => {
+      window.requestAnimationFrame(syncTagVisibility)
+    })
+
+    observer.observe(element)
+    return () => {
+      window.cancelAnimationFrame(nextFrame)
+      observer.disconnect()
+    }
+  }, [normalizedTags.length, view])
 
   const handlePrefetchRecordMap = () => {
     if (prefetchedRef.current || !data.id) {
@@ -163,7 +210,7 @@ const PostCard: React.FC<Props> = ({ data, view, visibleCountSnapshot }) => {
           <div className="summary">
             <p>{data.summary}</p>
           </div>
-          <div className="tech-stack" data-empty={!hasTags}>
+          <div className="tech-stack" data-empty={!hasTags} ref={techStackRef}>
             {hasTags && (
               <div className="icons-container">
                 {displayTags.map((tag, index) => (
@@ -218,6 +265,12 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
       left: ${({ view }) => view === 'grid' ? '1rem' : 'auto'};
       right: ${({ view }) => view === 'grid' ? 'auto' : '1rem'};
       z-index: 10;
+
+      @media (max-width: 768px) {
+        top: 0.75rem;
+        left: ${({ view }) => view === 'grid' ? '0.75rem' : 'auto'};
+        right: ${({ view }) => view === 'grid' ? 'auto' : '0.75rem'};
+      }
     }
 
     > .thumbnail {
@@ -250,6 +303,10 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
       flex: 1;
       min-height: ${({ view }) => view === 'grid' ? '220px' : 'auto'};
 
+      @media (max-width: 768px) {
+        padding: 1rem;
+      }
+
       > .top {
         margin-bottom: 0.75rem;
         flex-shrink: 0;
@@ -265,6 +322,16 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           word-break: break-word;
+        }
+
+        @media (max-width: 768px) {
+          min-height: 2.75rem;
+          margin-bottom: 0.625rem;
+
+          h2 {
+            font-size: 1.0625rem;
+            line-height: 1.375rem;
+          }
         }
       }
 
@@ -305,6 +372,16 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
           -webkit-box-orient: vertical;
           word-break: break-word;
         }
+
+        @media (max-width: 768px) {
+          min-height: 2.5rem;
+          margin-bottom: 0.875rem;
+
+          p {
+            font-size: 0.8125rem;
+            line-height: 1.4;
+          }
+        }
       }
 
       > .tech-stack {
@@ -334,6 +411,11 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
             height: 100%;
             object-fit: contain;
           }
+
+          @media (max-width: 768px) {
+            width: 1.5rem;
+            height: 1.5rem;
+          }
         }
 
         .more-count {
@@ -344,6 +426,11 @@ const StyledWrapper = styled(Link)<{ view: 'list' | 'grid' }>`
           background-color: ${({ theme }) => theme.colors.gray3};
           padding: 0.25rem 0.5rem;
           border-radius: 0.375rem;
+
+          @media (max-width: 768px) {
+            font-size: 0.6875rem;
+            padding: 0.1875rem 0.375rem;
+          }
         }
       }
     }

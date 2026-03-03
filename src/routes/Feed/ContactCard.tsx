@@ -70,7 +70,9 @@ const ContactCard: React.FC = () => {
             rel="noreferrer"
             target="_blank"
           >
-            <AiOutlineGithub className="icon" />
+            <span className="icon-wrapper" aria-hidden>
+              <AiOutlineGithub className="icon" />
+            </span>
             <div className="name">github</div>
           </a>
         )}
@@ -80,7 +82,9 @@ const ContactCard: React.FC = () => {
             rel="noreferrer"
             target="_blank"
           >
-            <AiOutlineInstagram className="icon" />
+            <span className="icon-wrapper" aria-hidden>
+              <AiOutlineInstagram className="icon" />
+            </span>
             <div className="name">instagram</div>
           </a>
         )}
@@ -91,7 +95,9 @@ const ContactCard: React.FC = () => {
             title={CONFIG.profile.email}
             css={{ overflow: "hidden" }}
           >
-            <AiOutlineMail className="icon" />
+            <span className="icon-wrapper" aria-hidden>
+              <AiOutlineMail className="icon" />
+            </span>
             <div className="name-row">
               <div className="name">email</div>
               {copyState === "success" && (
@@ -112,7 +118,9 @@ const ContactCard: React.FC = () => {
             rel="noreferrer"
             target="_blank"
           >
-            <AiFillLinkedin className="icon" />
+            <span className="icon-wrapper" aria-hidden>
+              <AiFillLinkedin className="icon" />
+            </span>
             <div className="name">linkedin</div>
           </a>
         )}
@@ -136,7 +144,8 @@ const StyledWrapper = styled.div`
     theme.scheme === "light" ? "white" : theme.colors.gray4};
   a,
   button {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1.5rem minmax(0, 1fr);
     padding: 0.75rem;
     gap: 0.75rem;
     align-items: center;
@@ -147,15 +156,26 @@ const StyledWrapper = styled.div`
     border: none;
     background: transparent;
     text-align: left;
+    appearance: none;
+    -webkit-appearance: none;
 
     :hover {
       color: ${({ theme }) => theme.colors.gray12};
       background-color: ${({ theme }) => theme.colors.gray5};
     }
 
+    .icon-wrapper {
+      width: 1.5rem;
+      height: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
     .icon {
       font-size: 1.5rem;
-      line-height: 2rem;
+      line-height: 1;
     }
     .name {
       font-size: 0.875rem;

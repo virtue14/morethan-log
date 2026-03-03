@@ -78,7 +78,11 @@ const FeedHeader = ({ view, order, onViewChange, onOrderChange }: Props): JSX.El
             aria-expanded={opened}
             aria-label="카테고리 선택 열기"
           >
-            {currentCategory} Posts <MdExpandMore />
+            <span className="label">
+              <span className="category-name">{currentCategory}</span>
+              <span className="category-suffix">Posts</span>
+            </span>
+            <MdExpandMore />
           </button>
           <div
             className="content"
@@ -137,7 +141,8 @@ const FeedHeader = ({ view, order, onViewChange, onOrderChange }: Props): JSX.El
             onClick={() => handleOrderChange("desc")}
             aria-pressed={order === "desc"}
           >
-            최신순
+            <span className="order-label-desktop">최신순</span>
+            <span className="order-label-mobile">최신</span>
           </button>
           <button
             type="button"
@@ -145,7 +150,8 @@ const FeedHeader = ({ view, order, onViewChange, onOrderChange }: Props): JSX.El
             onClick={() => handleOrderChange("asc")}
             aria-pressed={order === "asc"}
           >
-            오래된순
+            <span className="order-label-desktop">오래된순</span>
+            <span className="order-label-mobile">오래된</span>
           </button>
         </div>
       </div>
@@ -158,9 +164,18 @@ const StyledWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-  padding: 0.5rem;
+  padding: 0.375rem;
+  gap: 0.5rem;
+
+  @media (max-width: 768px) {
+    padding: 0.125rem;
+    margin-bottom: 0.875rem;
+  }
 
   .left {
+    min-width: 0;
+    flex: 1 1 auto;
+
     .category-select {
       position: relative;
       
@@ -168,22 +183,61 @@ const StyledWrapper = styled.div`
         display: flex;
         align-items: center;
         gap: 0.25rem;
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
         color: ${({ theme }) => theme.colors.gray12};
         border: none;
         background: transparent;
-        min-height: 44px;
-        padding: 0 0.25rem;
+        min-height: 40px;
+        padding: 0 0.125rem;
         border-radius: 0.5rem;
+        width: 100%;
+        min-width: 0;
+
+        .label {
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
+          min-width: 0;
+          flex: 1 1 auto;
+          overflow: hidden;
+
+          .category-name {
+            display: block;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .category-suffix {
+            flex-shrink: 0;
+            white-space: nowrap;
+          }
+        }
 
         svg {
           margin-top: 1px;
+          flex-shrink: 0;
         }
 
         &:hover {
           background-color: ${({ theme }) => theme.colors.gray4};
+        }
+
+        @media (max-width: 768px) {
+          font-size: 0.875rem;
+          min-height: 36px;
+          gap: 0.125rem;
+
+          .label {
+            gap: 0.125rem;
+
+            .category-suffix {
+              display: none;
+            }
+          }
         }
       }
 
@@ -256,18 +310,23 @@ const StyledWrapper = styled.div`
   .right {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.625rem;
+    flex: 0 0 auto;
+
+    @media (max-width: 768px) {
+      gap: 0.375rem;
+    }
 
     .view-toggle {
       display: flex;
-      gap: 0.25rem;
-      padding: 0.25rem;
+      gap: 0.1875rem;
+      padding: 0.1875rem;
       background-color: ${({ theme }) => theme.colors.gray4};
       border-radius: 0.5rem;
 
       button {
-        width: 44px;
-        height: 44px;
+        width: 38px;
+        height: 38px;
         border: none;
         border-radius: 0.375rem;
         background: none;
@@ -285,22 +344,30 @@ const StyledWrapper = styled.div`
           background-color: ${({ theme }) => theme.colors.gray2};
           color: ${({ theme }) => theme.colors.gray12};
         }
+
+        @media (max-width: 768px) {
+          width: 36px;
+          height: 36px;
+        }
       }
     }
 
     .order-toggle {
       display: flex;
-      gap: 0.25rem;
-      padding: 0.25rem;
+      gap: 0.1875rem;
+      padding: 0.1875rem;
       background-color: ${({ theme }) => theme.colors.gray4};
       border-radius: 0.5rem;
 
       button {
-        min-height: 44px;
-        padding: 0.375rem 0.625rem;
+        min-height: 38px;
+        padding: 0.25rem 0.55rem;
         cursor: pointer;
         color: ${({ theme }) => theme.colors.gray10};
-        font-size: 0.875rem;
+        font-size: 0.8125rem;
+        line-height: 1;
+        white-space: nowrap;
+        word-break: keep-all;
         border-radius: 0.375rem;
         transition: all 0.2s;
         border: none;
@@ -314,6 +381,26 @@ const StyledWrapper = styled.div`
 
         &:hover {
           color: ${({ theme }) => theme.colors.gray12};
+        }
+
+        @media (max-width: 768px) {
+          min-height: 36px;
+          padding: 0.25rem 0.45rem;
+          font-size: 0.75rem;
+        }
+
+        .order-label-mobile {
+          display: none;
+        }
+
+        @media (max-width: 768px) {
+          .order-label-desktop {
+            display: none;
+          }
+
+          .order-label-mobile {
+            display: inline;
+          }
         }
       }
     }
