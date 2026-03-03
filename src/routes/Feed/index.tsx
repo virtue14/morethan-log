@@ -18,11 +18,20 @@ import ActiveFilters from "./ActiveFilters"
 
 const HEADER_HEIGHT = 73
 const FEED_VIEW_STORAGE_KEY = "feed:view"
+const FEED_ORDER_STORAGE_KEY = "feed:order"
 
 type Props = {}
 
 const getViewFromStorage = (value: string | null): "list" | "grid" => {
   return value === "list" ? "list" : "grid"
+}
+
+const parseOrder = (value: string | string[] | null | undefined): "asc" | "desc" => {
+  if (typeof value !== "string") {
+    return "desc"
+  }
+  const normalized = value.toLowerCase()
+  return normalized === "asc" || normalized === "acc" ? "asc" : "desc"
 }
 
 const isEditableElement = (target: EventTarget | null) => {
@@ -46,6 +55,7 @@ const Feed: React.FC<Props> = () => {
   const debouncedQuery = useDebouncedValue(q, 250)
   const [filteredCount, setFilteredCount] = useState(0)
   const [view, setView] = useState<"list" | "grid">("grid")
+  const [order, setOrder] = useState<"asc" | "desc">("desc")
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -54,7 +64,9 @@ const Feed: React.FC<Props> = () => {
     }
 
     const storedView = window.localStorage.getItem(FEED_VIEW_STORAGE_KEY)
+    const storedOrder = window.localStorage.getItem(FEED_ORDER_STORAGE_KEY)
     setView(getViewFromStorage(storedView))
+    setOrder(parseOrder(storedOrder))
   }, [hydrated])
 
   useEffect(() => {
@@ -62,12 +74,22 @@ const Feed: React.FC<Props> = () => {
       return
     }
 
-    if (typeof router.query.view !== "string") {
+    const hasLegacyView = typeof router.query.view === "string"
+    const hasLegacyOrder = typeof router.query.order === "string"
+
+    if (!hasLegacyView && !hasLegacyOrder) {
       return
+    }
+
+    if (hasLegacyOrder) {
+      const legacyOrder = parseOrder(router.query.order)
+      setOrder(legacyOrder)
+      window.localStorage.setItem(FEED_ORDER_STORAGE_KEY, legacyOrder)
     }
 
     const nextQuery = { ...router.query }
     delete nextQuery.view
+    delete nextQuery.order
 
     void router.replace(
       {
@@ -112,6 +134,13 @@ const Feed: React.FC<Props> = () => {
     }
   }
 
+  const handleOrderChange = (newOrder: "asc" | "desc") => {
+    setOrder(newOrder)
+    if (hydrated) {
+      window.localStorage.setItem(FEED_ORDER_STORAGE_KEY, newOrder)
+    }
+  }
+
   return (
     <StyledWrapper>
       <div
@@ -132,19 +161,29 @@ const Feed: React.FC<Props> = () => {
           onClear={() => setQ("")}
           resultCount={filteredCount}
         />
-        <ActiveFilters q={q} onClearSearch={() => setQ("")} />
+        <ActiveFilters
+          q={q}
+          onClearSearch={() => setQ("")}
+        />
         <div className="tags">
           <CategoryList />
         </div>
         <div>
-          <FeedHeader view={view} onViewChange={handleViewChange} />
+          <FeedHeader
+            view={view}
+            order={order}
+            onViewChange={handleViewChange}
+            onOrderChange={handleOrderChange}
+          />
         </div>
         <hr className="divider" />
         <PostList
           q={debouncedQuery}
           view={view}
+          order={order}
           onFilteredCountChange={setFilteredCount}
           onResetSearch={() => setQ("")}
+          onResetOrder={() => handleOrderChange("desc")}
         />
         <div className="footer">
           <Footer />

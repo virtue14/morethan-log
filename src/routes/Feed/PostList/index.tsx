@@ -13,8 +13,10 @@ import { prefetchRecordMap } from "src/hooks/useRecordMapQuery"
 type Props = {
   q: string
   view: 'list' | 'grid'
+  order: "asc" | "desc"
   onFilteredCountChange?: (count: number) => void
   onResetSearch?: () => void
+  onResetOrder?: () => void
 }
 
 const POSTS_PER_PAGE = 4
@@ -32,20 +34,13 @@ const parsePage = (value: string | string[] | undefined): number => {
   return page
 }
 
-const parseOrder = (value: string | string[] | undefined): "asc" | "desc" => {
-  if (typeof value !== "string") {
-    return "desc"
-  }
-
-  const normalized = value.toLowerCase()
-  return normalized === "asc" || normalized === "acc" ? "asc" : "desc"
-}
-
 const PostList: React.FC<Props> = ({
   q,
   view,
+  order,
   onFilteredCountChange,
   onResetSearch,
+  onResetOrder,
 }) => {
   const router = useRouter()
   const hydrated = useHydrated()
@@ -64,7 +59,6 @@ const PostList: React.FC<Props> = ({
     typeof query.category === "string"
       ? query.category
       : DEFAULT_CATEGORY
-  const currentOrder = parseOrder(query.order)
 
   const filteredPosts = useMemo(() => {
     return filterPosts({
@@ -72,16 +66,16 @@ const PostList: React.FC<Props> = ({
       q,
       tag: currentTag,
       category: currentCategory,
-      order: currentOrder,
+      order,
     })
-  }, [q, currentTag, currentCategory, currentOrder, data])
+  }, [q, currentTag, currentCategory, order, data])
 
   const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
   const hasActiveFilters =
     q.trim().length > 0 ||
     Boolean(currentTag) ||
     currentCategory !== DEFAULT_CATEGORY ||
-    currentOrder !== "desc"
+    order !== "desc"
   const showDataError = data.length === 0 && !hasActiveFilters
   const queryPage = parsePage(isQueryReady ? router.query.page : undefined)
   const currentPage = totalPages > 0 ? Math.min(queryPage, totalPages) : 1
@@ -89,7 +83,7 @@ const PostList: React.FC<Props> = ({
     q,
     tag: currentTag ?? "",
     category: currentCategory ?? "",
-    order: currentOrder,
+    order,
   })
 
   const syncPageToQuery = (nextPage: number) => {
@@ -200,7 +194,7 @@ const PostList: React.FC<Props> = ({
       return
     }
     setVisibleCount(POSTS_PER_PAGE)
-  }, [isMobileViewport, currentCategory, currentTag, currentOrder, q])
+  }, [isMobileViewport, currentCategory, currentTag, order, q])
 
   useEffect(() => {
     // Prefetch the first cards' recordMap to reduce detail first-view latency.
@@ -262,7 +256,6 @@ const PostList: React.FC<Props> = ({
     const nextQuery = { ...router.query }
     delete nextQuery.tag
     delete nextQuery.category
-    delete nextQuery.order
     delete nextQuery.page
 
     void router.replace(
@@ -273,6 +266,8 @@ const PostList: React.FC<Props> = ({
       undefined,
       { shallow: true, scroll: false }
     )
+
+    onResetOrder?.()
   }
 
   const handleRetryLoad = () => {

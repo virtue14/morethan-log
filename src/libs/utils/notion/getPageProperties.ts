@@ -101,7 +101,7 @@ async function getPageProperties(
             const newurl = customMapImageUrl(url, Block)
             properties[propertySchema.name] = newurl
           } catch (error) {
-            properties[propertySchema.name] = undefined
+            // keep property absent when image extraction fails
           }
           break
         }

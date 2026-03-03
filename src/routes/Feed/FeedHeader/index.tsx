@@ -21,22 +21,14 @@ type ViewType = 'list' | 'grid'
 
 interface Props {
   view: ViewType
+  order: "asc" | "desc"
   onViewChange: (view: ViewType) => void
+  onOrderChange: (order: "asc" | "desc") => void
 }
 
-const parseOrder = (value: string | string[] | undefined): "asc" | "desc" => {
-  if (typeof value !== "string") {
-    return "desc"
-  }
-
-  const normalized = value.toLowerCase()
-  return normalized === "asc" || normalized === "acc" ? "asc" : "desc"
-}
-
-const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
+const FeedHeader = ({ view, order, onViewChange, onOrderChange }: Props): JSX.Element => {
   const router = useRouter()
   const hydrated = useHydrated()
-  const currentOrder = hydrated ? parseOrder(router.query.order) : "desc"
   const data = useCategoriesQuery()
   const [dropdownRef, opened, handleOpen] = useDropdown()
   const currentCategory =
@@ -56,18 +48,7 @@ const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
   }
 
   const handleOrderChange = (order: "asc" | "desc") => {
-    if (!hydrated || !router.isReady) {
-      return
-    }
-
-    const nextQuery: ParsedUrlQueryInput = { ...router.query }
-    if (order === "desc") {
-      delete nextQuery.order
-    } else {
-      nextQuery.order = order
-    }
-    delete nextQuery.page
-    replaceQuery(nextQuery)
+    onOrderChange(order)
   }
 
   const handleCategoryChange = (category: string) => {
@@ -152,17 +133,17 @@ const FeedHeader = ({ view, onViewChange }: Props): JSX.Element => {
         <div className="order-toggle">
           <button
             type="button"
-            data-active={currentOrder === "desc"}
+            data-active={order === "desc"}
             onClick={() => handleOrderChange("desc")}
-            aria-pressed={currentOrder === "desc"}
+            aria-pressed={order === "desc"}
           >
             최신순
           </button>
           <button
             type="button"
-            data-active={currentOrder === "asc"}
+            data-active={order === "asc"}
             onClick={() => handleOrderChange("asc")}
-            aria-pressed={currentOrder === "asc"}
+            aria-pressed={order === "asc"}
           >
             오래된순
           </button>

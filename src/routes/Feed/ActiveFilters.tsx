@@ -10,16 +10,6 @@ type Props = {
   onClearSearch: () => void
 }
 
-const parseOrder = (value: string | string[] | undefined): "asc" | "desc" => {
-  if (typeof value !== "string") {
-    return "desc"
-  }
-
-  return value.toLowerCase() === "asc" || value.toLowerCase() === "acc"
-    ? "asc"
-    : "desc"
-}
-
 const ActiveFilters: React.FC<Props> = ({ q, onClearSearch }) => {
   const router = useRouter()
   const hydrated = useHydrated()
@@ -30,7 +20,6 @@ const ActiveFilters: React.FC<Props> = ({ q, onClearSearch }) => {
       : DEFAULT_CATEGORY
   const currentTag =
     isReady && typeof router.query.tag === "string" ? router.query.tag : undefined
-  const currentOrder = isReady ? parseOrder(router.query.order) : "desc"
 
   const replaceQuery = (nextQuery: ParsedUrlQueryInput) => {
     void router.replace(
@@ -43,7 +32,7 @@ const ActiveFilters: React.FC<Props> = ({ q, onClearSearch }) => {
     )
   }
 
-  const removeQueryKey = (key: "category" | "tag" | "order" | "view") => {
+  const removeQueryKey = (key: "category" | "tag" | "view") => {
     if (!isReady) return
     const nextQuery: ParsedUrlQueryInput = { ...router.query }
     delete nextQuery[key]
@@ -72,13 +61,6 @@ const ActiveFilters: React.FC<Props> = ({ q, onClearSearch }) => {
       key: "tag",
       label: `태그: ${currentTag}`,
       onRemove: () => removeQueryKey("tag"),
-    })
-  }
-  if (currentOrder === "asc") {
-    chips.push({
-      key: "order",
-      label: "정렬: 오래된순",
-      onRemove: () => removeQueryKey("order"),
     })
   }
   if (chips.length === 0) {

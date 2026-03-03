@@ -15,11 +15,39 @@ type Props = {
   view: 'list' | 'grid'
 }
 
+const normalizeThumbnailSrc = (value?: string): string | undefined => {
+  if (!value) {
+    return undefined
+  }
+
+  if (
+    value.startsWith("https://") ||
+    value.startsWith("http://") ||
+    value.startsWith("data:")
+  ) {
+    return value
+  }
+
+  if (value.startsWith("/image") || value.startsWith("/images")) {
+    return `https://www.notion.so${value}`
+  }
+
+  if (value.startsWith("image/") || value.startsWith("images/")) {
+    return `https://www.notion.so/${value}`
+  }
+
+  return value
+}
+
 const PostCard: React.FC<Props> = ({ data, view }) => {
   const [isThumbnailLoaded, setIsThumbnailLoaded] = useState(false)
   const prefetchedRef = useRef(false)
   const queryClient = useQueryClient()
   const category = (data.category && data.category?.[0]) || undefined
+  const thumbnailSrc = useMemo(
+    () => normalizeThumbnailSrc(data.thumbnail),
+    [data.thumbnail]
+  )
 
   const getFormattedDate = () => {
     const startDate = data?.date?.start_date || null
@@ -57,7 +85,7 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
 
   useEffect(() => {
     setIsThumbnailLoaded(false)
-  }, [data.thumbnail, data.slug, view])
+  }, [thumbnailSrc, data.slug, view])
 
   const handlePrefetchRecordMap = () => {
     if (prefetchedRef.current || !data.id) {
@@ -82,11 +110,11 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
             <Category>{category}</Category>
           </div>
         )}
-        {data.thumbnail && view === 'grid' && (
+        {thumbnailSrc && view === 'grid' && (
           <div className="thumbnail">
             {!isThumbnailLoaded && <div className="thumbnail-skeleton" aria-hidden />}
             <Image
-              src={data.thumbnail}
+              src={thumbnailSrc}
               fill
               alt={data.title}
               sizes="(max-width: 768px) 100vw, (max-width: 1120px) 50vw, 520px"
@@ -99,7 +127,7 @@ const PostCard: React.FC<Props> = ({ data, view }) => {
           </div>
         )}
         <div
-          data-thumb={view === "grid" && !!data.thumbnail}
+          data-thumb={view === "grid" && !!thumbnailSrc}
           data-category={!!category}
           className="content"
         >
